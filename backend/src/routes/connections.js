@@ -2,6 +2,11 @@ const express = require('express');
 const router = express.Router();
 const Connection = require('../models/connection');
 const Notification = require('../models/notification');
+const User = require('../models/user');
+const { sendConnectionRequestEmail, sendConnectionAcceptedEmail } = require('../utils/emailService');
+
+// Get the io instance
+const io = require('../socket');
 
 // Get connection status between two users
 router.get('/status/:fromUserId/:toUserId', async (req, res) => {
@@ -34,20 +39,34 @@ router.post('/request', async (req, res) => {
   try {
     const { fromUserId, toUserId } = req.body;
 
-    // Create connection with pending status
+    // Get both users' details
+    const [fromUser, toUser] = await Promise.all([
+      User.findOne({ firebaseUid: fromUserId }),
+      User.findOne({ firebaseUid: toUserId })
+    ]);
+
+    // Create connection
     const connection = await Connection.create({
       fromUser: fromUserId,
       toUser: toUserId,
       status: 'pending'
     });
 
-    // Create notification for recipient
-    await Notification.create({
+    // Send email with direct link to requester's profile
+    await sendConnectionRequestEmail(toUser.email, fromUser.name, fromUserId);
+
+    // Create and emit real-time notification
+    const notification = await Notification.create({
       userId: toUserId,
       type: 'connection_request',
-      fromUser: fromUserId,
+      fromUser: {
+        name: fromUser.name,
+        firebaseUid: fromUserId
+      },
       read: false
     });
+
+    io.to(toUserId).emit('notification', notification);
 
     res.json({ connection });
   } catch (error) {
@@ -61,7 +80,12 @@ router.post('/accept', async (req, res) => {
   try {
     const { fromUserId, toUserId } = req.body;
 
-    // Update connection status to accepted
+    // Get both users' details
+    const [fromUser, toUser] = await Promise.all([
+      User.findOne({ firebaseUid: fromUserId }),
+      User.findOne({ firebaseUid: toUserId })
+    ]);
+
     const connection = await Connection.findOneAndUpdate(
       {
         fromUser: fromUserId,
@@ -76,13 +100,21 @@ router.post('/accept', async (req, res) => {
       return res.status(404).json({ error: 'Connection request not found' });
     }
 
-    // Create notification for the original sender
-    await Notification.create({
+    // Send email with direct links to profile and chat
+    await sendConnectionAcceptedEmail(fromUser.email, toUser.name, toUserId);
+
+    // Create and emit real-time notification
+    const notification = await Notification.create({
       userId: fromUserId,
       type: 'connection_accepted',
-      fromUser: toUserId,
+      fromUser: {
+        name: toUser.name,
+        firebaseUid: toUserId
+      },
       read: false
     });
+
+    io.to(fromUserId).emit('notification', notification);
 
     res.json({ connection });
   } catch (error) {

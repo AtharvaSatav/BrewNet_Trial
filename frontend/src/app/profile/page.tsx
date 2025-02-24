@@ -77,7 +77,7 @@ export default function Profile() {
             </button>
             <h1 className="text-2xl font-bold text-brown-900">My Profile</h1>
             <button
-              onClick={() => router.push('/profile/edit')}
+              onClick={() => router.push('/onboarding?update=true')}
               className="px-4 py-2 bg-brown-600 text-white rounded-lg hover:bg-brown-700 transition-colors"
             >
               Edit Profile

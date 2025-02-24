@@ -282,4 +282,39 @@
 .page_acceptButton__C7qHX:disabled {
   background-color: #D2B48C; /* Lighter brown */
   cursor: not-allowed;
+}
+
+.page_connectionActions__Nl_RC {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+}
+
+.page_actionButtons__qdTl0 {
+  display: flex;
+  gap: 1rem;
+  width: 100%;
+}
+
+.page_disconnectButton__VXvtS {
+  flex: 1 1;
+  padding: 1rem;
+  background-color: #EF4444;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.page_disconnectButton__VXvtS:hover {
+  background-color: #DC2626;
+  transform: translateY(-2px);
+}
+
+.page_chatButton__z2m5U {
+  flex: 1 1;
 } 

@@ -40,7 +40,6 @@ export default function ProfilePage() {
   const params = useParams();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
-  const [isOwnProfile, setIsOwnProfile] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>({ status: 'none' });
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
@@ -93,11 +92,6 @@ export default function ProfilePage() {
         }
 
         setLoading(false);
-
-        // Check if viewing own profile
-        if (currentUser && currentUser.uid === params.id) {
-          setIsOwnProfile(true);
-        }
       } catch (error) {
         console.error('General error:', error);
         setError('An unexpected error occurred');
@@ -222,6 +216,8 @@ export default function ProfilePage() {
     );
   }
 
+  const isOwnProfile = auth.currentUser?.uid === params.id;
+
   return (
     <div className={styles.container}>
       <div className={styles.overlay} />
@@ -246,47 +242,51 @@ export default function ProfilePage() {
           ))}
         </div>
 
-        {connectionStatus.status === 'none' && (
-          <button onClick={handleConnect} className={styles.connectButton}>
-            Connect
-          </button>
-        )}
-
-        {connectionStatus.status === 'pending' && connectionStatus.initiator === auth.currentUser?.uid && (
-          <div className={styles.statusPending}>
-            Connection Request Pending
-          </div>
-        )}
-
-        {connectionStatus.status === 'pending' && connectionStatus.initiator !== auth.currentUser?.uid && (
-          <button 
-            onClick={handleAcceptConnection} 
-            className={`${styles.button} ${styles.acceptButton}`}
-          >
-            Accept Connection
-          </button>
-        )}
-
-        {connectionStatus.status === 'accepted' && (
-          <div className={styles.connectionActions}>
-            <div className={styles.statusConnected}>
-              Connected
-            </div>
-            <div className={styles.actionButtons}>
-              <button 
-                onClick={() => router.push(`/chat/${profile.firebaseUid}`)}
-                className={styles.chatButton}
-              >
-                Start Chat
+        {!isOwnProfile && (
+          <>
+            {connectionStatus.status === 'none' && (
+              <button onClick={handleConnect} className={styles.connectButton}>
+                Connect
               </button>
+            )}
+
+            {connectionStatus.status === 'pending' && connectionStatus.initiator === auth.currentUser?.uid && (
+              <div className={styles.statusPending}>
+                Connection Request Pending
+              </div>
+            )}
+
+            {connectionStatus.status === 'pending' && connectionStatus.initiator !== auth.currentUser?.uid && (
               <button 
-                onClick={handleDisconnect}
-                className={styles.disconnectButton}
+                onClick={handleAcceptConnection} 
+                className={`${styles.button} ${styles.acceptButton}`}
               >
-                Disconnect
+                Accept Connection
               </button>
-            </div>
-          </div>
+            )}
+
+            {connectionStatus.status === 'accepted' && (
+              <div className={styles.connectionActions}>
+                <div className={styles.statusConnected}>
+                  Connected
+                </div>
+                <div className={styles.actionButtons}>
+                  <button 
+                    onClick={() => router.push(`/chat/${profile.firebaseUid}`)}
+                    className={styles.chatButton}
+                  >
+                    Start Chat
+                  </button>
+                  <button 
+                    onClick={handleDisconnect}
+                    className={styles.disconnectButton}
+                  >
+                    Disconnect
+                  </button>
+                </div>
+              </div>
+            )}
+          </>
         )}
       </main>
 

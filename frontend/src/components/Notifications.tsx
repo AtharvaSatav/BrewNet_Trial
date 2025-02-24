@@ -2,94 +2,109 @@
 
 import { useEffect, useState } from 'react';
 import { auth } from '@/lib/firebase';
+import styles from './Notifications.module.css';
+import io from 'socket.io-client';
+import { useRouter } from 'next/router';
 
 interface Notification {
   _id: string;
-  type: 'connection_request' | 'connection_accepted' | 'connection_removed';
-  fromUser: string;
+  type: 'connection_request' | 'connection_accepted';
+  fromUser: {
+    name: string;
+    firebaseUid: string;
+  };
   read: boolean;
-  createdAt: Date;
+  createdAt: string;
 }
 
 export default function Notifications() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [mounted, setMounted] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
-    setMounted(true);
     const user = auth.currentUser;
     if (!user) return;
 
-    // Initial fetch
-    fetchNotifications(user.uid);
+    // Set up WebSocket connection
+    const socket = io('http://localhost:5000');
+    
+    socket.on('connect', () => {
+      socket.emit('join', { userId: user.uid });
+    });
 
-    // Poll for new notifications every 5 seconds
-    const interval = setInterval(() => {
-      fetchNotifications(user.uid);
-    }, 5000);
+    // Listen for new notifications
+    socket.on('notification', (notification: Notification) => {
+      setNotifications(prev => [notification, ...prev]);
+    });
 
-    return () => clearInterval(interval);
+    // Fetch existing notifications
+    const fetchNotifications = async () => {
+      try {
+        const response = await fetch(`http://localhost:5000/api/notifications/${user.uid}`);
+        if (response.ok) {
+          const data = await response.json();
+          setNotifications(data.notifications);
+        }
+      } catch (error) {
+        console.error('Error fetching notifications:', error);
+      }
+    };
+
+    fetchNotifications();
+
+    return () => {
+      socket.disconnect();
+    };
   }, []);
 
-  const fetchNotifications = async (userId: string) => {
+  const handleNotificationClick = async (notification: Notification) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/notifications/${userId}`);
-      if (response.ok) {
-        const data = await response.json();
-        console.log('Fetched notifications:', data.notifications);
-        setNotifications(data.notifications);
-      }
-    } catch (error) {
-      console.error('Error fetching notifications:', error);
-    }
-  };
-
-  const markAsRead = async (notificationId: string) => {
-    try {
-      await fetch(`http://localhost:5000/api/notifications/${notificationId}/read`, {
+      // Mark notification as read
+      await fetch(`http://localhost:5000/api/notifications/${notification._id}/read`, {
         method: 'PUT'
       });
-      // Remove the notification from the list
-      setNotifications(prev => prev.filter(n => n._id !== notificationId));
+
+      // Remove from list
+      setNotifications(prev => prev.filter(n => n._id !== notification._id));
+
+      // Navigate to profile if it's a connection request
+      if (notification.type === 'connection_request') {
+        router.push(`/profile/${notification.fromUser.firebaseUid}`);
+      }
     } catch (error) {
-      console.error('Error marking notification as read:', error);
+      console.error('Error handling notification:', error);
     }
   };
 
-  if (!mounted) return null;
-
   return (
-    <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2 max-w-sm w-full">
+    <div className={styles.notificationContainer}>
       {notifications.map((notification) => (
         <div
           key={notification._id}
-          className="bg-white rounded-lg shadow-lg p-4 border-l-4 border-green-500 animate-slideIn"
-          onClick={() => markAsRead(notification._id)}
+          className={styles.notification}
+          onClick={() => handleNotificationClick(notification)}
         >
-          {notification.type === 'connection_accepted' && (
-            <div className="flex flex-col">
-              <p className="text-green-600 font-semibold">
-                Connection Request Accepted! 🎉
-              </p>
-              <p className="text-sm text-gray-600 mt-1">
-                Your connection request was accepted
-              </p>
-              <p className="text-xs text-gray-400 mt-2">
-                Click to dismiss
-              </p>
+          {notification.type === 'connection_request' && (
+            <div className={styles.notificationContent}>
+              <div className={styles.notificationTitle}>New Connection Request!</div>
+              <div className={styles.notificationMessage}>
+                {notification.fromUser.name} wants to connect with you
+              </div>
+              <div className={styles.notificationTime}>
+                {new Date(notification.createdAt).toLocaleTimeString()}
+              </div>
             </div>
           )}
-          {notification.type === 'connection_removed' && (
-            <div className="flex flex-col">
-              <p className="text-red-600 font-semibold">
-                Connection Removed
-              </p>
-              <p className="text-sm text-gray-600 mt-1">
-                A user has disconnected from you
-              </p>
-              <p className="text-xs text-gray-400 mt-2">
-                Click to dismiss
-              </p>
+
+          {notification.type === 'connection_accepted' && (
+            <div className={styles.notificationContent}>
+              <div className={styles.notificationTitle}>Connection Accepted! 🎉</div>
+              <div className={styles.notificationMessage}>
+                You are now connected with {notification.fromUser.name}
+              </div>
+              <div className={styles.notificationTime}>
+                {new Date(notification.createdAt).toLocaleTimeString()}
+              </div>
             </div>
           )}
         </div>
