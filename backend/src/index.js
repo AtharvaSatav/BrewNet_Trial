@@ -8,6 +8,11 @@ const authRoutes = require('./routes/auth');
 const connectionRoutes = require('./routes/connections');
 const notificationRoutes = require('./routes/notifications');
 const chatRoutes = require('./routes/chat');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
+const compression = require('compression');
+const https = require('https');
+const fs = require('fs');
 
 const app = express();
 const server = http.createServer(app);
@@ -17,11 +22,20 @@ const io = socketIO.init(server);
 
 // Middleware
 app.use(cors({
-  origin: 'http://localhost:3000',
+  origin: ['https://brewnet.in', 'https://www.brewnet.in'],
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true
 }));
 app.use(express.json());
+app.use(helmet());
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100 // limit each IP to 100 requests per windowMs
+});
+app.use(limiter);
+
+app.use(compression());
 
 // Routes
 app.use('/api/auth', authRoutes);
@@ -57,4 +71,11 @@ io.on('connection', (socket) => {
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
-}); 
+});
+
+const options = {
+  key: fs.readFileSync('path/to/key.pem'),
+  cert: fs.readFileSync('path/to/cert.pem')
+};
+
+https.createServer(options, app).listen(443); 

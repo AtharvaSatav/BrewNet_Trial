@@ -4,13 +4,17 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon src/index.js",
-    "start": "node src/index.js"
+    "start": "NODE_ENV=production node src/index.js",
+    "build": "next build"
   },
   "dependencies": {
+    "compression": "^1.8.0",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
+    "express-rate-limit": "^7.5.0",
     "firebase-admin": "^11.8.0",
+    "helmet": "^8.0.0",
     "mongoose": "^7.1.0",
     "resend": "^4.1.2",
     "socket.io": "^4.8.1"

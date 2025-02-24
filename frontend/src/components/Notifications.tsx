@@ -26,7 +26,7 @@ export default function Notifications() {
     if (!user) return;
 
     // Set up WebSocket connection
-    const socket = io('http://localhost:5000');
+    const socket = io(process.env.NEXT_PUBLIC_SOCKET_URL);
     
     socket.on('connect', () => {
       socket.emit('join', { userId: user.uid });

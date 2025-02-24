@@ -25,7 +25,7 @@ export default function Discovery() {
         try {
           // Fetch all users from the backend
           //const response = await fetch('http://localhost:5000/api/auth/users');
-          const response = await fetch('http://localhost:5000/api/auth/users');
+          const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/users`);
           if (response.ok) {
             const data = await response.json();
             // Filter out the current user and format the profiles
