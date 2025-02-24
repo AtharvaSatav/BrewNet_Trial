@@ -1,0 +1,285 @@
+/*!********************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[5].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[5].use[3]!./src/app/profile/[id]/page.module.css ***!
+  \********************************************************************************************************************************************************************************************************************************************************************************/
+.page_container__lq__b {
+  min-height: 100vh;
+  background-image: url("/cafe-background.jpg");
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  padding: 2rem;
+}
+
+.page_overlay__GsRBK {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 0;
+}
+
+.page_header__3hq8C {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 20;
+}
+
+.page_backButton__8bs7n {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #333;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 0.5rem;
+  background-color: rgba(255, 255, 255, 0.9);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.page_backButton__8bs7n:hover {
+  background-color: white;
+  transform: translateY(-1px);
+}
+
+.page_profileCard__5iCoe {
+  position: relative;
+  z-index: 10;
+  max-width: 600px;
+  margin: 6rem auto 0;
+  padding: 2rem;
+  background-color: rgba(255, 255, 255, 0.95);
+  border-radius: 1rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  animation: page_fadeIn__hIaK0 0.5s ease;
+}
+
+@keyframes page_fadeIn__hIaK0 {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.page_name__6aKxq {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.page_interestsContainer__xmHuk {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+  justify-content: center;
+}
+
+.page_interest__mEjrl {
+  padding: 0.5rem 1rem;
+  background-color: #f5f5f5;
+  color: #666;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.page_connectButton__PyFmn {
+  width: 100%;
+  padding: 1rem;
+  background-color: #8B4513;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 1rem;
+}
+
+.page_connectButton__PyFmn:hover {
+  background-color: #6B3410;
+  transform: translateY(-2px);
+}
+
+.page_pendingButton__RKRu7 {
+  width: 100%;
+  padding: 1rem;
+  background-color: #E5E5E5;
+  color: #666;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  cursor: not-allowed;
+  margin-top: 1rem;
+}
+
+.page_chatButton__z2m5U {
+  width: 100%;
+  padding: 1rem;
+  background-color: #2F855A;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 1rem;
+}
+
+.page_chatButton__z2m5U:hover {
+  background-color: #276749;
+  transform: translateY(-2px);
+}
+
+.page_connectionSection__9Xj_S {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.page_statusPending__7ieZe {
+  color: #B45309;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.page_statusPending__7ieZe::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  background-color: #B45309;
+  border-radius: 50%;
+  animation: page_pulse__2OOAP 1.5s infinite;
+}
+
+.page_statusConnected__SDG8y {
+  color: #059669;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.page_statusConnected__SDG8y::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  background-color: #059669;
+  border-radius: 50%;
+}
+
+.page_toast__L7Yr_ {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 1rem 2rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  animation: page_slideUp__SWHD0 0.3s ease;
+  z-index: 50;
+}
+
+.page_toastinfo__QLrCz {
+  background-color: #B45309;
+  color: white;
+}
+
+.page_toastsuccess__h5HR6 {
+  background-color: #059669;
+  color: white;
+}
+
+@keyframes page_pulse__2OOAP {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.2);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes page_slideUp__SWHD0 {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 20px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+@media (max-width: 640px) {
+  .page_container__lq__b {
+    padding: 1rem;
+  }
+
+  .page_profileCard__5iCoe {
+    margin-top: 5rem;
+    padding: 1.5rem;
+  }
+
+  .page_name__6aKxq {
+    font-size: 1.5rem;
+  }
+
+  .page_header__3hq8C {
+    padding: 1rem;
+  }
+}
+
+.page_button__aubGT {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.page_acceptButton__C7qHX {
+  background-color: #8B4513; /* Coffee brown */
+  color: white;
+  border: none;
+  margin-top: 1rem;
+}
+
+.page_acceptButton__C7qHX:hover {
+  background-color: #6F3710; /* Darker coffee brown */
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.page_acceptButton__C7qHX:active {
+  transform: translateY(0);
+}
+
+.page_acceptButton__C7qHX:disabled {
+  background-color: #D2B48C; /* Lighter brown */
+  cursor: not-allowed;
+} 

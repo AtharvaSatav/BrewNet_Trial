@@ -1,0 +1,5 @@
+{
+  "/discovery/page": "app/discovery/page.js",
+  "/login/page": "app/login/page.js",
+  "/profile/[id]/page": "app/profile/[id]/page.js"
+}

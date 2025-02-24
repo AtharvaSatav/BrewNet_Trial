@@ -1,0 +1,317 @@
+.container {
+  min-height: 100vh;
+  background-image: url("/cafe-background.jpg");
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  padding: 2rem;
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 0;
+}
+
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 20;
+}
+
+.backButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #333;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 0.5rem;
+  background-color: rgba(255, 255, 255, 0.9);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.backButton:hover {
+  background-color: white;
+  transform: translateY(-1px);
+}
+
+.profileCard {
+  position: relative;
+  z-index: 10;
+  max-width: 600px;
+  margin: 6rem auto 0;
+  padding: 2rem;
+  background-color: rgba(255, 255, 255, 0.95);
+  border-radius: 1rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.name {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.interestsContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+  justify-content: center;
+}
+
+.interest {
+  padding: 0.5rem 1rem;
+  background-color: #f5f5f5;
+  color: #666;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.connectButton {
+  width: 100%;
+  padding: 1rem;
+  background-color: #8B4513;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 1rem;
+}
+
+.connectButton:hover {
+  background-color: #6B3410;
+  transform: translateY(-2px);
+}
+
+.pendingButton {
+  width: 100%;
+  padding: 1rem;
+  background-color: #E5E5E5;
+  color: #666;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  cursor: not-allowed;
+  margin-top: 1rem;
+}
+
+.chatButton {
+  width: 100%;
+  padding: 1rem;
+  background-color: #2F855A;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 1rem;
+}
+
+.chatButton:hover {
+  background-color: #276749;
+  transform: translateY(-2px);
+}
+
+.connectionSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.statusPending {
+  color: #B45309;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.statusPending::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  background-color: #B45309;
+  border-radius: 50%;
+  animation: pulse 1.5s infinite;
+}
+
+.statusConnected {
+  color: #059669;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.statusConnected::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  background-color: #059669;
+  border-radius: 50%;
+}
+
+.toast {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 1rem 2rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  animation: slideUp 0.3s ease;
+  z-index: 50;
+}
+
+.toastinfo {
+  background-color: #B45309;
+  color: white;
+}
+
+.toastsuccess {
+  background-color: #059669;
+  color: white;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.2);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 20px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+@media (max-width: 640px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .profileCard {
+    margin-top: 5rem;
+    padding: 1.5rem;
+  }
+
+  .name {
+    font-size: 1.5rem;
+  }
+
+  .header {
+    padding: 1rem;
+  }
+}
+
+.button {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.acceptButton {
+  background-color: #8B4513; /* Coffee brown */
+  color: white;
+  border: none;
+  margin-top: 1rem;
+}
+
+.acceptButton:hover {
+  background-color: #6F3710; /* Darker coffee brown */
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.acceptButton:active {
+  transform: translateY(0);
+}
+
+.acceptButton:disabled {
+  background-color: #D2B48C; /* Lighter brown */
+  cursor: not-allowed;
+}
+
+.connectionActions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+}
+
+.actionButtons {
+  display: flex;
+  gap: 1rem;
+  width: 100%;
+}
+
+.disconnectButton {
+  flex: 1;
+  padding: 1rem;
+  background-color: #EF4444;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.disconnectButton:hover {
+  background-color: #DC2626;
+  transform: translateY(-2px);
+}
+
+.chatButton {
+  flex: 1;
+} 

@@ -1,0 +1,19 @@
+mkdir brewnet
+cd brewnet
+mkdir frontend backend 
+cd frontend
+npx create-next-app@latest . --typescript --tailwind --eslint 
+npm install
+npm install firebase 
+mkdir -p public
+cd backend
+npm install 
+npm run dev 
+cd ../frontend
+rm -rf node_modules package-lock.json
+npm install
+npm run dev 
+mkdir -p src/lib
+mkdir -p src/app/login src/app/onboarding src/app/discovery
+cd public
+curl -o google-icon.png https://raw.githubusercontent.com/google/google-signin-button/master/btn_google_light_normal.png
