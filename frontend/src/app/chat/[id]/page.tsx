@@ -6,15 +6,7 @@ import { auth } from '@/lib/firebase';
 import Image from 'next/image';
 import styles from './page.module.css';
 import { signOut } from 'firebase/auth';
-
-interface Message {
-  _id?: string;  // MongoDB id
-  id?: string;   // Local id
-  text: string;
-  senderId: string;
-  receiverId: string;
-  timestamp: number;
-}
+import { Message } from '@/types/message';
 
 interface ChatUser {
   firebaseUid: string;
@@ -228,7 +220,7 @@ export default function ChatRoom() {
         timestamp: Date.now()
       };
 
-      setMessages(prev => [...prev, newMessage]);
+      setMessages(prev => [...prev, newMessage as Message]);
       messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
 
       const response = await fetch('http://localhost:5000/api/chat/message', {

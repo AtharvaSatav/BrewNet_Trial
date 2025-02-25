@@ -6,7 +6,6 @@ module.exports = {
     io = new Server(httpServer, {
       cors: {
         origin: ['https://brewnet.in', 'https://www.brewnet.in'],
-        methods: ["GET", "POST"]
       }
     });
 
