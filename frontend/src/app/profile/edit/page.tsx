@@ -1,14 +1,5 @@
-import dynamic from 'next/dynamic';
-import DynamicPageWrapper from '@/components/DynamicPageWrapper';
-
-const EditProfileContent = dynamic(() => import('./EditProfileContent'), {
-  ssr: false
-});
+import ClientPage from './ClientPage';
 
 export default function EditProfilePage() {
-  return (
-    <DynamicPageWrapper>
-      <EditProfileContent />
-    </DynamicPageWrapper>
-  );
+  return <ClientPage />;
 } 

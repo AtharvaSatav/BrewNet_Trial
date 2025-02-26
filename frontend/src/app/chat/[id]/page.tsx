@@ -1,14 +1,5 @@
-import dynamic from 'next/dynamic';
-import DynamicPageWrapper from '@/components/DynamicPageWrapper';
-
-const ChatContent = dynamic(() => import('./ChatContent'), {
-  ssr: false
-});
+import ClientPage from './ClientPage';
 
 export default function ChatPage() {
-  return (
-    <DynamicPageWrapper>
-      <ChatContent />
-    </DynamicPageWrapper>
-  );
+  return <ClientPage />;
 } 
