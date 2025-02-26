@@ -4,10 +4,19 @@ const nextConfig = {
   experimental: {
     serverActions: true,
   },
-  // Disable static optimization for all pages
+  // Disable static optimization
   reactStrictMode: true,
   typescript: {
     ignoreBuildErrors: true,
+  },
+  // Configure dynamic pages
+  pageExtensions: ['tsx', 'ts', 'jsx', 'js'],
+  compiler: {
+    styledComponents: true,
+  },
+  webpack: (config) => {
+    config.experiments = { ...config.experiments, topLevelAwait: true }
+    return config
   },
   // Add dynamic routes configuration
   async headers() {

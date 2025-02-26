@@ -1,11 +1,11 @@
 {
-  "/discovery/page": "app/discovery/page.js",
-  "/chat/[id]/page": "app/chat/[id]/page.js",
-  "/onboarding/page": "app/onboarding/page.js",
   "/_not-found/page": "app/_not-found/page.js",
-  "/page": "app/page.js",
-  "/profile/edit/page": "app/profile/edit/page.js",
+  "/chat/[id]/page": "app/chat/[id]/page.js",
   "/profile/[id]/page": "app/profile/[id]/page.js",
-  "/profile/page": "app/profile/page.js",
-  "/login/page": "app/login/page.js"
+  "/discovery/page": "app/discovery/page.js",
+  "/page": "app/page.js",
+  "/login/page": "app/login/page.js",
+  "/profile/edit/page": "app/profile/edit/page.js",
+  "/onboarding/page": "app/onboarding/page.js",
+  "/profile/page": "app/profile/page.js"
 }
