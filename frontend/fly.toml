@@ -1,4 +1,4 @@
-# fly.toml app configuration file generated for brewnet on 2025-02-26T14:51:48+05:30
+# fly.toml app configuration file generated for brewnet on 2025-02-26T15:07:45+05:30
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
@@ -7,36 +7,27 @@ app = 'brewnet'
 primary_region = 'sin'
 
 [build]
-  [build.args]
-    NEXT_PUBLIC_FIREBASE_API_KEY = "AIzaSyD72HmBTrehu6RqAwfH14n37nbgSoSiF4c"
-    NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN = "brewnet-dd55e.firebaseapp.com"
-    NEXT_PUBLIC_FIREBASE_PROJECT_ID = "brewnet-dd55e"
-    NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET = "brewnet-dd55e.firebasestorage.app"
-    NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID = "720864557324"
-    NEXT_PUBLIC_FIREBASE_APP_ID = "1:720864557324:web:b7f4b2419dc12753503129"
-    NEXT_PUBLIC_API_URL = "https://brewnet-api.fly.dev"
-    NEXT_PUBLIC_SOCKET_URL = "wss://brewnet-api.fly.dev"
 
 [http_service]
   internal_port = 3000
   force_https = true
-  auto_stop_machines = true
+  auto_stop_machines = 'stop'
   auto_start_machines = true
   min_machines_running = 1
 
 [[services]]
-  protocol = "tcp"
+  protocol = 'tcp'
   internal_port = 3000
 
   [[services.ports]]
     port = 80
-    handlers = ["http"]
+    handlers = ['http']
 
   [[services.ports]]
     port = 443
-    handlers = ["tls", "http"]
+    handlers = ['tls', 'http']
 
 [[vm]]
-  memory = "1gb"
-  cpu_kind = "shared"
+  memory = '1gb'
+  cpu_kind = 'shared'
   cpus = 1
