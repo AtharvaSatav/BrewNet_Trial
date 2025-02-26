@@ -9,19 +9,19 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "firebase": "^11.3.1",
     "next": "latest",
     "react": "latest",
     "react-dom": "latest",
+    "firebase": "^11.3.1",
     "socket.io-client": "^4.8.1"
   },
   "devDependencies": {
-    "@types/node": "^22.13.5",
+    "@types/node": "latest",
     "@types/react": "latest",
     "@types/react-dom": "latest",
+    "typescript": "latest",
     "autoprefixer": "latest",
     "postcss": "latest",
-    "tailwindcss": "latest",
-    "typescript": "latest"
+    "tailwindcss": "latest"
   }
 }

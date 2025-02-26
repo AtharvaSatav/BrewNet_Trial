@@ -1,0 +1,290 @@
+/*!***********************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[5].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[5].use[3]!./src/components/Notifications.module.css ***!
+  \***********************************************************************************************************************************************************************************************************************************************************************************/
+.Notifications_notificationContainer__I9ENV {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 350px;
+}
+
+.Notifications_notification__VtIyp {
+  background: white;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  animation: Notifications_slideIn__X02R_ 0.3s ease;
+  border-left: 4px solid #8B4513;
+}
+
+.Notifications_notificationContent__YDr4U {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.Notifications_notificationTitle__W_A3e {
+  font-weight: 600;
+  color: #8B4513;
+}
+
+.Notifications_notificationMessage__I5nVK {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.Notifications_notificationTime__xJYAW {
+  color: #999;
+  font-size: 0.8rem;
+  margin-top: 4px;
+}
+
+@keyframes Notifications_slideIn__X02R_ {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+} 
+/*!*****************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[5].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[5].use[3]!./src/app/discovery/page.module.css ***!
+  \*****************************************************************************************************************************************************************************************************************************************************************************/
+.page_container__cRG_4 {
+  min-height: 100vh;
+  background-image: url("/cafe-background.jpg");
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+
+.page_overlay__Jaxqz {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 0;
+}
+
+.page_header__NSz7e {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 1rem 2rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 20;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.page_brandName__ishNN {
+  color: #8B4513;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.page_mainContent__Qmfub {
+  position: relative;
+  z-index: 10;
+  padding: 7rem 2rem 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.page_title__te_dE {
+  color: white;
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.page_subtitle__0cBxp {
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 2rem;
+}
+
+.page_grid___ptBk {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-gap: 2rem;
+  gap: 2rem;
+}
+
+.page_card__bScfy {
+  background-color: rgba(255, 255, 255, 0.95);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.page_card__bScfy:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+}
+
+.page_cardName__SoP60 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333;
+  padding-bottom: 0.75rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #eee;
+}
+
+.page_interestsContainer__clSzx {
+  flex: 1 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.page_interest__2Cq2p {
+  background-color: #f5f5f5;
+  color: #666;
+  padding: 0.4rem 0.8rem;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+}
+
+.page_viewButton__ziz7z {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: transparent;
+  color: #8B4513;
+  border: 2px solid #8B4513;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.page_viewButton__ziz7z:hover {
+  background-color: #8B4513;
+  color: white;
+}
+
+.page_updateProfileButton__4Fipb {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  padding: 0.75rem 1.5rem;
+  background-color: #8B4513;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 30;
+}
+
+.page_updateProfileButton__4Fipb:hover {
+  background-color: #6B3410;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.page_profileMenu__o20bY {
+  position: relative;
+  display: inline-block;
+  margin-left: auto;
+}
+
+.page_profileButton___Xkjd {
+  background-color: #8B4513;
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.page_profileButton___Xkjd:hover {
+  background-color: #6B3410;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.page_menuDropdown__FVgmY {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 0.5rem;
+  background-color: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  min-width: 200px;
+  z-index: 30;
+  overflow: hidden;
+}
+
+.page_menuItem__fzIpL {
+  padding: 0.75rem 1rem;
+  color: #8B4513;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-bottom: 1px solid #eee;
+  font-weight: 500;
+}
+
+.page_menuItem__fzIpL:last-child {
+  border-bottom: none;
+}
+
+.page_menuItem__fzIpL:hover {
+  background-color: rgba(139, 69, 19, 0.1);
+  color: #6B3410;
+}
+
+.page_signOutButton__A5Ifo {
+  color: #8B4513;
+  font-weight: 500;
+}
+
+.page_signOutButton__A5Ifo:hover {
+  color: #EF4444;
+  background-color: rgba(239, 68, 68, 0.1);
+}
+
+@media (max-width: 640px) {
+  .page_mainContent__Qmfub {
+    padding: 6rem 1rem 1rem;
+  }
+
+  .page_grid___ptBk {
+    gap: 1rem;
+  }
+
+  .page_header__NSz7e {
+    padding: 1rem;
+  }
+} 

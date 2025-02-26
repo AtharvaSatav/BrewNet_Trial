@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { auth } from '@/lib/firebase';
 import styles from './Notifications.module.css';
 import io from 'socket.io-client';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 
 interface Notification {
   _id: string;
@@ -26,7 +26,7 @@ export default function Notifications() {
     if (!user) return;
 
     // Set up WebSocket connection
-    const socket = io(process.env.NEXT_PUBLIC_SOCKET_URL);
+    const socket = io('http://localhost:5000');
     
     socket.on('connect', () => {
       socket.emit('join', { userId: user.uid });
@@ -75,6 +75,9 @@ export default function Notifications() {
       console.error('Error handling notification:', error);
     }
   };
+
+  // Only render if we have notifications
+  if (notifications.length === 0) return null;
 
   return (
     <div className={styles.notificationContainer}>
