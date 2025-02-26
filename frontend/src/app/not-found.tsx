@@ -1,5 +1,3 @@
-'use client';
-
 export default function NotFound() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-brown-100 to-brown-200">
