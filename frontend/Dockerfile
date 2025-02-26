@@ -2,9 +2,11 @@ FROM node:18-alpine AS builder
 
 WORKDIR /app
 
+# Copy package files
 COPY package*.json ./
 RUN npm install
 
+# Copy rest of the application
 COPY . .
 
 # Set environment variables for build
@@ -17,19 +19,29 @@ ENV NEXT_PUBLIC_FIREBASE_APP_ID=1:720864557324:web:b7f4b2419dc12753503129
 ENV NEXT_PUBLIC_API_URL=https://brewnet-api.fly.dev
 ENV NEXT_PUBLIC_SOCKET_URL=wss://brewnet-api.fly.dev
 
+# Add build-time environment variable to disable static optimization
+ENV NEXT_RUNTIME="nodejs"
+ENV NODE_ENV="production"
+
+# Build the application
 RUN npm run build
 
+# Production image
 FROM node:18-alpine AS runner
 
 WORKDIR /app
 
 ENV NODE_ENV=production
+ENV NEXT_RUNTIME="nodejs"
+ENV NEXT_TELEMETRY_DISABLED=1
 
-COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/package.json ./package.json
+# Copy necessary files from builder
+COPY --from=builder /app/next.config.js ./
 COPY --from=builder /app/public ./public
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
 
 EXPOSE 3000
 
-CMD ["npm", "start"] 
+# Start the application
+CMD ["node", "server.js"] 
