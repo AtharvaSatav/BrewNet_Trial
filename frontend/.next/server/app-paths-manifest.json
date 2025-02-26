@@ -3,9 +3,9 @@
   "/chat/[id]/page": "app/chat/[id]/page.js",
   "/discovery/page": "app/discovery/page.js",
   "/login/page": "app/login/page.js",
-  "/page": "app/page.js",
   "/onboarding/page": "app/onboarding/page.js",
-  "/profile/[id]/page": "app/profile/[id]/page.js",
+  "/page": "app/page.js",
   "/profile/edit/page": "app/profile/edit/page.js",
-  "/profile/page": "app/profile/page.js"
+  "/profile/page": "app/profile/page.js",
+  "/profile/[id]/page": "app/profile/[id]/page.js"
 }
