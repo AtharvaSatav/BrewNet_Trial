@@ -1,12 +1,11 @@
 "use client";
 
-import { useEffect, useState, useRef } from 'react';
-import { useRouter, useParams } from 'next/navigation';
-import { auth } from '@/lib/firebase';
-import Image from 'next/image';
-import styles from './page.module.css';
-import { signOut } from 'firebase/auth';
-import io from 'socket.io-client';
+import { useEffect, useState, useRef } from "react";
+import { useRouter, useParams } from "next/navigation";
+import { auth } from "@/lib/firebase";
+import Image from "next/image";
+import styles from "./page.module.css";
+import { signOut } from "firebase/auth";
 
 interface Message {
   _id?: string;
@@ -94,99 +93,91 @@ export default function ChatRoom() {
       storeMessages(chatId, messages);
     }
   }, [messages, chatId]);
-
   useEffect(() => {
-    const fetchUserAndMessages = async () => {
-<<<<<<< HEAD
-      const currentUser = auth.currentUser;
-      if (!currentUser) {
-        router.push("/login");
-        return;
-      }
+    let intervalId: number;
 
-      try {
-        // Fetch user details
-        //const userResponse = await fetch(`http://localhost:4200/api/auth/user/${params.id}`);
-        const userResponse = await fetch(
-          `http://localhost:4200/api/auth/user/${params.id}`
-        );
-        if (!userResponse.ok) throw new Error("Failed to fetch user");
-=======
+    const fetchUserAndMessages = async () => {
       try {
         const currentUser = auth.currentUser;
         if (!currentUser) {
-          router.push('/login');
+          router.push("/login");
           return;
         }
 
         // Fetch other user's details
-        const userResponse = await fetch(`http://localhost:5000/api/auth/user/${params.id}`, {
-          headers: {
-            'Content-Type': 'application/json'
+        const userResponse = await fetch(
+          `http://localhost:4200/api/auth/user/${params.id}`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
           }
-        });
+        );
 
         if (!userResponse.ok) {
-          throw new Error('Failed to fetch user details');
+          throw new Error("Failed to fetch user details");
         }
 
->>>>>>> 5888a72777e7fba0680f56d08f27929f9fec433f
         const userData = await userResponse.json();
         setOtherUser(userData.user);
 
         // Fetch chat history
-<<<<<<< HEAD
-        // const chatResponse = await fetch(
-        //   `http://localhost:4200/api/chat/history/${currentUser.uid}/${params.id}`
-        // );
-=======
->>>>>>> 5888a72777e7fba0680f56d08f27929f9fec433f
         const chatResponse = await fetch(
-          `http://localhost:5000/api/chat/history/${currentUser.uid}/${params.id}`,
+          `http://localhost:4200/api/chat/history/${currentUser.uid}/${params.id}`,
           {
             headers: {
-              'Content-Type': 'application/json'
-            }
+              "Content-Type": "application/json",
+            },
           }
         );
-<<<<<<< HEAD
-        if (!chatResponse.ok) throw new Error("Failed to fetch chat history");
-        const chatData = await chatResponse.json();
-        setMessages(chatData.messages);
-
-        setLoading(false);
-      } catch (error) {
-        console.error("Error:", error);
-        setError("Failed to load chat");
-=======
 
         if (!chatResponse.ok) {
-          throw new Error('Failed to fetch chat history');
+          throw new Error("Failed to fetch chat history");
         }
 
         const chatData = await chatResponse.json();
         setMessages(chatData.messages);
         setLoading(false);
       } catch (error) {
-        console.error('Error:', error);
-        setError(error instanceof Error ? error.message : 'Failed to load chat');
->>>>>>> 5888a72777e7fba0680f56d08f27929f9fec433f
+        console.error("Error:", error);
+        setError(
+          error instanceof Error ? error.message : "Failed to load chat"
+        );
         setLoading(false);
       }
     };
 
+    // Fetch initially
     fetchUserAndMessages();
 
-    // Set up WebSocket connection
-    const socket = io('http://localhost:5000');
-    
-    socket.on('private message', (message: Message) => {
-      setMessages(prev => [...prev, message]);
-    });
+    // Polling every 1 second
+    intervalId = setInterval(async () => {
+      try {
+        const currentUser = auth.currentUser;
+        if (!currentUser) return;
 
-    return () => {
-      socket.disconnect();
-    };
+        const chatResponse = await fetch(
+          `http://localhost:4200/api/chat/history/${currentUser.uid}/${params.id}`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (!chatResponse.ok) {
+          throw new Error("Failed to fetch chat history");
+        }
+
+        const chatData = await chatResponse.json();
+        setMessages(chatData.messages);
+      } catch (error) {
+        console.error("Error fetching messages:", error);
+      }
+    }, 1000);
+
+    // Cleanup interval on unmount
+    return () => clearInterval(intervalId);
   }, [params.id, router]);
 
   const scrollToBottom = () => {
@@ -199,67 +190,47 @@ export default function ChatRoom() {
 
   const handleSend = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
-    
+
     if (!newMessage.trim()) return;
 
     try {
-<<<<<<< HEAD
-      const message = {
-        text: newMessage.trim(),
-        senderId: auth.currentUser.uid,
-        receiverId: params.id as string,
-        timestamp: Date.now(),
-      };
-
-      //const response = await fetch('http://localhost:4200/api/chat/message', {
-      const response = await fetch("http://192.168.1.3:5000/api/chat/message", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-=======
       const currentUser = auth.currentUser;
       if (!currentUser) {
-        router.push('/login');
+        router.push("/login");
         return;
       }
 
-      const response = await fetch('http://localhost:5000/api/chat/message', {
-        method: 'POST',
+      const response = await fetch("http://localhost:4200/api/chat/message", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json'
->>>>>>> 5888a72777e7fba0680f56d08f27929f9fec433f
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           senderId: currentUser.uid,
           receiverId: params.id,
-          text: newMessage.trim()
-        })
+          text: newMessage.trim(),
+        }),
       });
 
-<<<<<<< HEAD
-      if (!response.ok) throw new Error("Failed to send message");
-
-      const savedMessage = await response.json();
-      setMessages((prev) => [...prev, savedMessage.message]);
-      setNewMessage("");
-=======
       if (!response.ok) {
-        throw new Error('Failed to send message');
+        throw new Error("Failed to send message");
       }
 
       // Add message to local state immediately
       const timestamp = Date.now();
-      setMessages(prev => [...prev, {
-        senderId: currentUser.uid,
-        text: newMessage.trim(),
-        timestamp
-      }]);
+      setMessages((prev) => [
+        ...prev,
+        {
+          senderId: currentUser.uid,
+          text: newMessage.trim(),
+          timestamp,
+        },
+      ]);
 
       // Clear input
-      setNewMessage('');
->>>>>>> 5888a72777e7fba0680f56d08f27929f9fec433f
+      setNewMessage("");
     } catch (error) {
-      console.error('Error sending message:', error);
+      console.error("Error sending message:", error);
       // Optionally show error to user
     }
   };
@@ -279,31 +250,15 @@ export default function ChatRoom() {
       if (!userId) return;
 
       // Update user's status in database
-<<<<<<< HEAD
-      //const response = await fetch('http://localhost:4200/api/auth/sign-out', {
-      const response = await fetch(
-        "http://192.168.1.3:5000/api/auth/sign-out",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            userId,
-          }),
-        }
-      );
-=======
-      const response = await fetch('http://localhost:5000/api/auth/sign-out', {
-        method: 'POST',
+      const response = await fetch("http://localhost:4200/api/auth/sign-out", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          userId
+          userId,
         }),
       });
->>>>>>> 5888a72777e7fba0680f56d08f27929f9fec433f
 
       if (!response.ok) {
         throw new Error("Failed to update sign-out status");

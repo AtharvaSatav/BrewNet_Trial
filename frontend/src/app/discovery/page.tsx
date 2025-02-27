@@ -32,11 +32,7 @@ export default function Discovery() {
           );
           if (response.ok) {
             const data = await response.json();
-            // Filter out the current user and format the profiles
-            const otherUsers = data.users.filter(
-              (profile: Profile) => profile.firebaseUid !== user.uid
-            );
-            setProfiles(otherUsers);
+            setProfiles(data);
           } else {
             throw new Error("Failed to fetch profiles");
           }
