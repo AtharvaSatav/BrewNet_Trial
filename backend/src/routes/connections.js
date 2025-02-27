@@ -61,7 +61,10 @@ router.post("/request", async (req, res) => {
     const notification = await Notification.create({
       userId: toUserId,
       type: "connection_request",
-      fromUser: fromUserId,
+      fromUser: {
+        name: fromUser.name,
+        firebaseUid: fromUserId,
+      },
       read: false,
     });
 
@@ -103,15 +106,15 @@ router.post("/accept", async (req, res) => {
     // Send email with direct links to profile and chat
     await sendConnectionAcceptedEmail(fromUser.email, toUser.name, toUserId);
 
-    // Create and emit real-time notification
-    const notification = await Notification.create({
+    await Notification.create({
       userId: fromUserId,
       type: "connection_accepted",
-      fromUser: fromUser.firebaseUid,
+      fromUser: {
+        name: fromUser.name,
+        firebaseUid: fromUserId,
+      },
       read: false,
     });
-
-    // io.to(fromUserId).emit("notification", notification);
 
     res.json({ connection });
   } catch (error) {

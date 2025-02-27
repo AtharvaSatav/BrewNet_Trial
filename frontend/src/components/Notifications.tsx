@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 
 interface Notification {
   _id: string;
-  type: "connection_request" | "connection_accepted";
+  type: "connection_request" | "connection_accepted" | "connection_removed";
   fromUser: {
     name: string;
     firebaseUid: string;
@@ -45,7 +45,7 @@ export default function Notifications() {
     fetchNotifications();
 
     // Poll every 1 second
-    intervalId = setInterval(fetchNotifications, 1000);
+    intervalId = setInterval(fetchNotifications, 5000);
 
     // Cleanup polling on unmount
     return () => clearInterval(intervalId);
@@ -107,6 +107,19 @@ export default function Notifications() {
               </div>
               <div className={styles.notificationMessage}>
                 You are now connected with {notification.fromUser.name}
+              </div>
+              <div className={styles.notificationTime}>
+                {new Date(notification.createdAt).toLocaleTimeString()}
+              </div>
+            </div>
+          )}
+          {notification.type === "connection_removed" && (
+            <div className={styles.notificationContent}>
+              <div className={styles.notificationTitle}>
+                Connection Removed!
+              </div>
+              <div className={styles.notificationMessage}>
+                You can no longer chat with {notification.fromUser.name}
               </div>
               <div className={styles.notificationTime}>
                 {new Date(notification.createdAt).toLocaleTimeString()}
