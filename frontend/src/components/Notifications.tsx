@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { auth } from '@/lib/firebase';
-import styles from './Notifications.module.css';
-import io from 'socket.io-client';
-import { useRouter } from 'next/navigation';
+import { useEffect, useState } from "react";
+import { auth } from "@/lib/firebase";
+import styles from "./Notifications.module.css";
+import io from "socket.io-client";
+import { useRouter } from "next/navigation";
 
 interface Notification {
   _id: string;
-  type: 'connection_request' | 'connection_accepted';
+  type: "connection_request" | "connection_accepted";
   fromUser: {
     name: string;
     firebaseUid: string;
@@ -26,27 +26,29 @@ export default function Notifications() {
     if (!user) return;
 
     // Set up WebSocket connection
-    const socket = io('http://localhost:5000');
-    
-    socket.on('connect', () => {
-      socket.emit('join', { userId: user.uid });
+    const socket = io("http://localhost:4200");
+
+    socket.on("connect", () => {
+      socket.emit("join", { userId: user.uid });
     });
 
     // Listen for new notifications
-    socket.on('notification', (notification: Notification) => {
-      setNotifications(prev => [notification, ...prev]);
+    socket.on("notification", (notification: Notification) => {
+      setNotifications((prev) => [notification, ...prev]);
     });
 
     // Fetch existing notifications
     const fetchNotifications = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/api/notifications/${user.uid}`);
+        const response = await fetch(
+          `http://localhost:4200/api/notifications/${user.uid}`
+        );
         if (response.ok) {
           const data = await response.json();
           setNotifications(data.notifications);
         }
       } catch (error) {
-        console.error('Error fetching notifications:', error);
+        console.error("Error fetching notifications:", error);
       }
     };
 
@@ -60,19 +62,24 @@ export default function Notifications() {
   const handleNotificationClick = async (notification: Notification) => {
     try {
       // Mark notification as read
-      await fetch(`http://localhost:5000/api/notifications/${notification._id}/read`, {
-        method: 'PUT'
-      });
+      await fetch(
+        `http://localhost:4200/api/notifications/${notification._id}/read`,
+        {
+          method: "PUT",
+        }
+      );
 
       // Remove from list
-      setNotifications(prev => prev.filter(n => n._id !== notification._id));
+      setNotifications((prev) =>
+        prev.filter((n) => n._id !== notification._id)
+      );
 
       // Navigate to profile if it's a connection request
-      if (notification.type === 'connection_request') {
+      if (notification.type === "connection_request") {
         router.push(`/profile/${notification.fromUser.firebaseUid}`);
       }
     } catch (error) {
-      console.error('Error handling notification:', error);
+      console.error("Error handling notification:", error);
     }
   };
 
@@ -87,9 +94,11 @@ export default function Notifications() {
           className={styles.notification}
           onClick={() => handleNotificationClick(notification)}
         >
-          {notification.type === 'connection_request' && (
+          {notification.type === "connection_request" && (
             <div className={styles.notificationContent}>
-              <div className={styles.notificationTitle}>New Connection Request!</div>
+              <div className={styles.notificationTitle}>
+                New Connection Request!
+              </div>
               <div className={styles.notificationMessage}>
                 {notification.fromUser.name} wants to connect with you
               </div>
@@ -99,9 +108,11 @@ export default function Notifications() {
             </div>
           )}
 
-          {notification.type === 'connection_accepted' && (
+          {notification.type === "connection_accepted" && (
             <div className={styles.notificationContent}>
-              <div className={styles.notificationTitle}>Connection Accepted! 🎉</div>
+              <div className={styles.notificationTitle}>
+                Connection Accepted! 🎉
+              </div>
               <div className={styles.notificationMessage}>
                 You are now connected with {notification.fromUser.name}
               </div>
@@ -114,4 +125,4 @@ export default function Notifications() {
       ))}
     </div>
   );
-} 
+}

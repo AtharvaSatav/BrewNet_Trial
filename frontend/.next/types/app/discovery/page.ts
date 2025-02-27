@@ -1,4 +1,4 @@
-// File: C:\Users\athar\BrewNet1\frontend\src\app\discovery\page.tsx
+// File: /Users/ompatil/Desktop/BrewNet_Trial/frontend/src/app/discovery/page.tsx
 import * as entry from '../../../../src/app/discovery/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

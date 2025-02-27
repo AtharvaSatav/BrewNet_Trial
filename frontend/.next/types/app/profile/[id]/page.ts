@@ -1,4 +1,4 @@
-// File: C:\Users\athar\BrewNet1\frontend\src\app\profile\[id]\page.tsx
+// File: /Users/ompatil/Desktop/BrewNet_Trial/frontend/src/app/profile/[id]/page.tsx
 import * as entry from '../../../../../src/app/profile/[id]/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { auth } from '@/lib/firebase';
-import Navbar from '@/components/Navbar';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { auth } from "@/lib/firebase";
+import Navbar from "@/components/Navbar";
 
 interface UserProfile {
   name: string;
@@ -21,23 +21,25 @@ export default function Profile() {
     const fetchProfile = async () => {
       const user = auth.currentUser;
       if (!user) {
-        router.push('/login');
+        router.push("/login");
         return;
       }
 
       try {
-        //const response = await fetch(`http://localhost:5000/api/auth/user/${user.uid}`);
-        const response = await fetch(`http://localhost:5000/api/auth/user/${user.uid}`);
-        if (!response.ok) throw new Error('Failed to fetch profile');
-        
+        //const response = await fetch(`http://localhost:4200/api/auth/user/${user.uid}`);
+        const response = await fetch(
+          `http://localhost:4200/api/auth/user/${user.uid}`
+        );
+        if (!response.ok) throw new Error("Failed to fetch profile");
+
         const data = await response.json();
         setProfile({
           name: data.user.name,
           gender: data.user.gender,
-          interests: data.user.interests
+          interests: data.user.interests,
         });
       } catch (err) {
-        setError('Failed to load profile');
+        setError("Failed to load profile");
         console.error(err);
       } finally {
         setLoading(false);
@@ -58,7 +60,7 @@ export default function Profile() {
   if (error || !profile) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-red-600">{error || 'Profile not found'}</div>
+        <div className="text-red-600">{error || "Profile not found"}</div>
       </div>
     );
   }
@@ -70,14 +72,14 @@ export default function Profile() {
         <div className="max-w-2xl mx-auto bg-white rounded-xl shadow-lg p-8">
           <div className="flex justify-between items-center mb-6 gap-4">
             <button
-              onClick={() => router.push('/discovery')}
+              onClick={() => router.push("/discovery")}
               className="px-4 py-2 text-brown-600 hover:text-brown-800 flex items-center gap-2"
             >
               <span>←</span> Back to Discovery
             </button>
             <h1 className="text-2xl font-bold text-brown-900">My Profile</h1>
             <button
-              onClick={() => router.push('/onboarding?update=true')}
+              onClick={() => router.push("/onboarding?update=true")}
               className="px-4 py-2 bg-brown-600 text-white rounded-lg hover:bg-brown-700 transition-colors"
             >
               Edit Profile
@@ -113,4 +115,4 @@ export default function Profile() {
       </main>
     </>
   );
-} 
+}

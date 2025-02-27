@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { auth } from '@/lib/firebase';
-import { AVAILABLE_INTERESTS } from '@/types/onboarding';
-import Navbar from '@/components/Navbar';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { auth } from "@/lib/firebase";
+import { AVAILABLE_INTERESTS } from "@/types/onboarding";
+import Navbar from "@/components/Navbar";
 
 interface UserProfile {
   name: string;
@@ -18,31 +18,33 @@ export default function EditProfile() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [profile, setProfile] = useState<UserProfile>({
-    name: '',
-    gender: '',
-    interests: []
+    name: "",
+    gender: "",
+    interests: [],
   });
 
   useEffect(() => {
     const fetchProfile = async () => {
       const user = auth.currentUser;
       if (!user) {
-        router.push('/login');
+        router.push("/login");
         return;
       }
 
       try {
-        const response = await fetch(`http://localhost:5000/api/auth/user/${user.uid}`);
-        if (!response.ok) throw new Error('Failed to fetch profile');
-        
+        const response = await fetch(
+          `http://localhost:4200/api/auth/user/${user.uid}`
+        );
+        if (!response.ok) throw new Error("Failed to fetch profile");
+
         const data = await response.json();
         setProfile({
           name: data.user.name,
           gender: data.user.gender,
-          interests: data.user.interests
+          interests: data.user.interests,
         });
       } catch (err) {
-        setError('Failed to load profile');
+        setError("Failed to load profile");
         console.error(err);
       } finally {
         setLoading(false);
@@ -59,38 +61,41 @@ export default function EditProfile() {
 
     try {
       const user = auth.currentUser;
-      if (!user) throw new Error('Not authenticated');
+      if (!user) throw new Error("Not authenticated");
 
-      console.log('Sending profile update:', profile);
+      console.log("Sending profile update:", profile);
 
-      const response = await fetch(`http://localhost:5000/api/auth/update-profile/${user.uid}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(profile),
-      });
+      const response = await fetch(
+        `http://localhost:4200/api/auth/update-profile/${user.uid}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(profile),
+        }
+      );
 
-      if (!response.ok) throw new Error('Failed to update profile');
-      
+      if (!response.ok) throw new Error("Failed to update profile");
+
       const data = await response.json();
-      console.log('Update response:', data);
+      console.log("Update response:", data);
 
-      router.push('/profile');
+      router.push("/profile");
     } catch (err) {
-      console.error('Update error:', err);
-      setError(err instanceof Error ? err.message : 'Failed to update profile');
+      console.error("Update error:", err);
+      setError(err instanceof Error ? err.message : "Failed to update profile");
     } finally {
       setSaving(false);
     }
   };
 
   const handleInterestToggle = (interest: string) => {
-    setProfile(prev => ({
+    setProfile((prev) => ({
       ...prev,
       interests: prev.interests.includes(interest)
-        ? prev.interests.filter(i => i !== interest)
-        : [...prev.interests, interest]
+        ? prev.interests.filter((i) => i !== interest)
+        : [...prev.interests, interest],
     }));
   };
 
@@ -109,14 +114,14 @@ export default function EditProfile() {
         <div className="max-w-md mx-auto bg-white rounded-xl shadow-lg p-8">
           <div className="flex items-center gap-4 mb-6">
             <button
-              onClick={() => router.push('/discovery')}
+              onClick={() => router.push("/discovery")}
               className="text-brown-600 hover:text-brown-800 flex items-center gap-2"
             >
               <span>←</span> Back to Discovery
             </button>
             <h1 className="text-2xl font-bold text-brown-900">Edit Profile</h1>
           </div>
-          
+
           {error && (
             <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
               {error}
@@ -125,27 +130,37 @@ export default function EditProfile() {
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-brown-700">
+              <label
+                htmlFor="name"
+                className="block text-sm font-medium text-brown-700"
+              >
                 Name
               </label>
               <input
                 type="text"
                 id="name"
                 value={profile.name}
-                onChange={(e) => setProfile(prev => ({ ...prev, name: e.target.value }))}
+                onChange={(e) =>
+                  setProfile((prev) => ({ ...prev, name: e.target.value }))
+                }
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brown-500 focus:ring-brown-500"
                 required
               />
             </div>
 
             <div>
-              <label htmlFor="gender" className="block text-sm font-medium text-brown-700">
+              <label
+                htmlFor="gender"
+                className="block text-sm font-medium text-brown-700"
+              >
                 Gender
               </label>
               <select
                 id="gender"
                 value={profile.gender}
-                onChange={(e) => setProfile(prev => ({ ...prev, gender: e.target.value }))}
+                onChange={(e) =>
+                  setProfile((prev) => ({ ...prev, gender: e.target.value }))
+                }
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brown-500 focus:ring-brown-500"
                 required
               >
@@ -191,7 +206,7 @@ export default function EditProfile() {
                 disabled={saving}
                 className="flex-1 px-4 py-2 bg-brown-600 text-white rounded-lg hover:bg-brown-700 disabled:opacity-50"
               >
-                {saving ? 'Saving...' : 'Save Changes'}
+                {saving ? "Saving..." : "Save Changes"}
               </button>
             </div>
           </form>
@@ -199,4 +214,4 @@ export default function EditProfile() {
       </main>
     </>
   );
-} 
+}
