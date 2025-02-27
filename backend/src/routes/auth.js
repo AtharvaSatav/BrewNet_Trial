@@ -89,6 +89,13 @@ router.post("/complete-onboarding", async (req, res) => {
       },
       { new: true }
     );
+    const user = await User.findOneAndUpdate(
+      { firebaseUid },
+      {
+        isOnline: true,
+      },
+      { new: true }
+    );
 
     if (!updatedUser) {
       return res.status(404).json({ error: "User not found" });
@@ -168,7 +175,7 @@ router.get("/users/:user", async (req, res) => {
         _id: 0,
       }
     );
-    res.json({ users });
+    return res.status(200).json(users);
   } catch (error) {
     console.error("Error fetching users:", error);
     res.status(500).json({ error: "Server error" });
