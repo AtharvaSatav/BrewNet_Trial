@@ -9,7 +9,6 @@ const {
 } = require("../utils/emailService");
 
 // Get the io instance
-const io = require("../socket");
 
 // Get connection status between two users
 router.get("/status/:fromUserId/:toUserId", async (req, res) => {

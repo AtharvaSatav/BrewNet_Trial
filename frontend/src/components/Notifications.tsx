@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { auth } from "@/lib/firebase";
 import styles from "./Notifications.module.css";
-import io from "socket.io-client";
 import { useRouter } from "next/navigation";
 
 interface Notification {
@@ -22,27 +21,17 @@ export default function Notifications() {
   const router = useRouter();
 
   useEffect(() => {
-    const user = auth.currentUser;
-    if (!user) return;
+    let intervalId: NodeJS.Timeout;
 
-    // Set up WebSocket connection
-    const socket = io("http://localhost:4200");
-
-    socket.on("connect", () => {
-      socket.emit("join", { userId: user.uid });
-    });
-
-    // Listen for new notifications
-    socket.on("notification", (notification: Notification) => {
-      setNotifications((prev) => [notification, ...prev]);
-    });
-
-    // Fetch existing notifications
     const fetchNotifications = async () => {
       try {
+        const user = auth.currentUser;
+        if (!user) return;
+
         const response = await fetch(
           `http://localhost:4200/api/notifications/${user.uid}`
         );
+
         if (response.ok) {
           const data = await response.json();
           setNotifications(data.notifications);
@@ -52,11 +41,14 @@ export default function Notifications() {
       }
     };
 
+    // Fetch initially
     fetchNotifications();
 
-    return () => {
-      socket.disconnect();
-    };
+    // Poll every 1 second
+    intervalId = setInterval(fetchNotifications, 1000);
+
+    // Cleanup polling on unmount
+    return () => clearInterval(intervalId);
   }, []);
 
   const handleNotificationClick = async (notification: Notification) => {

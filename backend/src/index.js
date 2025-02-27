@@ -2,7 +2,6 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const http = require("http");
-const socketIO = require("./socket");
 const connectDB = require("./config/db");
 const authRoutes = require("./routes/auth");
 const connectionRoutes = require("./routes/connections");
@@ -12,15 +11,13 @@ const chatRoutes = require("./routes/chat");
 const app = express();
 const server = http.createServer(app);
 
-// Initialize socket.io
-const io = socketIO.init(server);
+// Initialize socket.io (only once)
 
 // Middleware
 app.use(
   cors({
     origin: "*",
     methods: ["GET", "POST", "PUT", "DELETE"],
-    // credentials: true,
   })
 );
 app.use(express.json());
@@ -38,23 +35,6 @@ app.get("/api/health", (req, res) => {
 
 // Connect to MongoDB
 connectDB();
-
-// Socket.IO connection handling
-io.on("connection", (socket) => {
-  console.log("User connected:", socket.id);
-
-  socket.on("join", ({ userId }) => {
-    socket.join(userId);
-  });
-
-  socket.on("private message", (message) => {
-    io.to(message.receiverId).emit("private message", message);
-  });
-
-  socket.on("disconnect", () => {
-    console.log("User disconnected:", socket.id);
-  });
-});
 
 const PORT = process.env.PORT || 4200;
 server.listen(PORT, () => {
