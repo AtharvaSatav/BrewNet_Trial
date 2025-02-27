@@ -164,12 +164,17 @@ export default function ChatRoom() {
     scrollToBottom();
   }, [messages]);
 
-  const handleSend = async () => {
+  const handleSend = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    
     if (!newMessage.trim()) return;
 
     try {
       const currentUser = auth.currentUser;
-      if (!currentUser) return;
+      if (!currentUser) {
+        router.push('/login');
+        return;
+      }
 
       const response = await fetch('http://localhost:5000/api/chat/message', {
         method: 'POST',
@@ -179,7 +184,7 @@ export default function ChatRoom() {
         body: JSON.stringify({
           senderId: currentUser.uid,
           receiverId: params.id,
-          text: newMessage
+          text: newMessage.trim()
         })
       });
 
@@ -187,10 +192,19 @@ export default function ChatRoom() {
         throw new Error('Failed to send message');
       }
 
+      // Add message to local state immediately
+      const timestamp = Date.now();
+      setMessages(prev => [...prev, {
+        senderId: currentUser.uid,
+        text: newMessage.trim(),
+        timestamp
+      }]);
+
+      // Clear input
       setNewMessage('');
     } catch (error) {
       console.error('Error sending message:', error);
-      setError('Failed to send message');
+      // Optionally show error to user
     }
   };
 
@@ -369,22 +383,22 @@ export default function ChatRoom() {
         </div>
 
         <div className={styles.inputArea}>
-          <input
-            ref={inputRef}
-            type="text"
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-            onKeyPress={handleKeyPress}
-            placeholder="Type a message..."
-            className={styles.input}
-          />
-          <button 
-            onClick={handleSend}
-            className={styles.sendButton}
-            disabled={!newMessage.trim()}
-          >
-            Send
-          </button>
+          <form onSubmit={handleSend} className={styles.messageForm}>
+            <input
+              type="text"
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+              placeholder="Type a message..."
+              className={styles.input}
+            />
+            <button
+              type="submit"
+              disabled={!newMessage.trim()}
+              className={styles.sendButton}
+            >
+              Send
+            </button>
+          </form>
         </div>
       </main>
     </div>
