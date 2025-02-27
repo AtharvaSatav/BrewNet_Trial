@@ -6,13 +6,12 @@ import { auth } from '@/lib/firebase';
 import Image from 'next/image';
 import styles from './page.module.css';
 import { signOut } from 'firebase/auth';
+import io from 'socket.io-client';
 
 interface Message {
-  _id?: string;  // MongoDB id
-  id?: string;   // Local id
-  text: string;
+  _id?: string;
   senderId: string;
-  receiverId: string;
+  text: string;
   timestamp: number;
 }
 
@@ -98,40 +97,63 @@ export default function ChatRoom() {
 
   useEffect(() => {
     const fetchUserAndMessages = async () => {
-      const currentUser = auth.currentUser;
-      if (!currentUser) {
-        router.push('/login');
-        return;
-      }
-
       try {
-        // Fetch user details
-        //const userResponse = await fetch(`http://localhost:5000/api/auth/user/${params.id}`);
-        const userResponse = await fetch(`http://192.168.1.3:5000/api/auth/user/${params.id}`);
-        if (!userResponse.ok) throw new Error('Failed to fetch user');
+        const currentUser = auth.currentUser;
+        if (!currentUser) {
+          router.push('/login');
+          return;
+        }
+
+        // Fetch other user's details
+        const userResponse = await fetch(`http://localhost:5000/api/auth/user/${params.id}`, {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (!userResponse.ok) {
+          throw new Error('Failed to fetch user details');
+        }
+
         const userData = await userResponse.json();
         setOtherUser(userData.user);
 
         // Fetch chat history
-        // const chatResponse = await fetch(
-        //   `http://localhost:5000/api/chat/history/${currentUser.uid}/${params.id}`
-        // );
         const chatResponse = await fetch(
-          `http://192.168.1.3:5000/api/chat/history/${currentUser.uid}/${params.id}`
+          `http://localhost:5000/api/chat/history/${currentUser.uid}/${params.id}`,
+          {
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          }
         );
-        if (!chatResponse.ok) throw new Error('Failed to fetch chat history');
+
+        if (!chatResponse.ok) {
+          throw new Error('Failed to fetch chat history');
+        }
+
         const chatData = await chatResponse.json();
         setMessages(chatData.messages);
-        
         setLoading(false);
       } catch (error) {
         console.error('Error:', error);
-        setError('Failed to load chat');
+        setError(error instanceof Error ? error.message : 'Failed to load chat');
         setLoading(false);
       }
     };
 
     fetchUserAndMessages();
+
+    // Set up WebSocket connection
+    const socket = io('http://localhost:5000');
+    
+    socket.on('private message', (message: Message) => {
+      setMessages(prev => [...prev, message]);
+    });
+
+    return () => {
+      socket.disconnect();
+    };
   }, [params.id, router]);
 
   const scrollToBottom = () => {
@@ -143,29 +165,28 @@ export default function ChatRoom() {
   }, [messages]);
 
   const handleSend = async () => {
-    if (!newMessage.trim() || !auth.currentUser) return;
+    if (!newMessage.trim()) return;
 
     try {
-      const message = {
-        text: newMessage.trim(),
-        senderId: auth.currentUser.uid,
-        receiverId: params.id as string,
-        timestamp: Date.now()
-      };
+      const currentUser = auth.currentUser;
+      if (!currentUser) return;
 
-      //const response = await fetch('http://localhost:5000/api/chat/message', {
-      const response = await fetch('http://192.168.1.3:5000/api/chat/message', {
+      const response = await fetch('http://localhost:5000/api/chat/message', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify(message),
+        body: JSON.stringify({
+          senderId: currentUser.uid,
+          receiverId: params.id,
+          text: newMessage
+        })
       });
 
-      if (!response.ok) throw new Error('Failed to send message');
+      if (!response.ok) {
+        throw new Error('Failed to send message');
+      }
 
-      const savedMessage = await response.json();
-      setMessages(prev => [...prev, savedMessage.message]);
       setNewMessage('');
     } catch (error) {
       console.error('Error sending message:', error);
@@ -188,8 +209,7 @@ export default function ChatRoom() {
       if (!userId) return;
 
       // Update user's status in database
-      //const response = await fetch('http://localhost:5000/api/auth/sign-out', {
-      const response = await fetch('http://192.168.1.3:5000/api/auth/sign-out', {
+      const response = await fetch('http://localhost:5000/api/auth/sign-out', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -247,7 +267,25 @@ export default function ChatRoom() {
   };
 
   if (loading) {
-    return <div className={styles.loading}>Loading chat...</div>;
+    return (
+      <div className={styles.container}>
+        <div className={styles.overlay} />
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-white">Loading chat...</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.overlay} />
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-red-500">{error}</div>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -302,18 +340,16 @@ export default function ChatRoom() {
         <div className={styles.messageList}>
           {messages.map((message) => (
             <div
-              key={message._id || message.timestamp.toString()}
+              key={message._id || `${message.senderId}-${message.timestamp}`}
               className={`${styles.messageWrapper} ${
                 message.senderId === auth.currentUser?.uid ? styles.sent : styles.received
               }`}
             >
               <div className={styles.message}>
-                <div className={styles.messageContent}>
-                  {message.text}
-                  <span className={styles.timestamp}>
-                    {new Date(message.timestamp).toLocaleTimeString()}
-                  </span>
-                </div>
+                {message.text}
+                <span className={styles.timestamp}>
+                  {new Date(message.timestamp).toLocaleTimeString()}
+                </span>
               </div>
             </div>
           ))}
