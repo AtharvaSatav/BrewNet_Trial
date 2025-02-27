@@ -1,18 +1,5 @@
 "use client";
 
-<<<<<<< HEAD
-import { useEffect, useState, useRef } from "react";
-import { useRouter, useParams } from "next/navigation";
-import { auth } from "@/lib/firebase";
-import Image from "next/image";
-import styles from "./page.module.css";
-import { signOut } from "firebase/auth";
-
-interface Message {
-  _id?: string; // MongoDB id
-  id?: string; // Local id
-  text: string;
-=======
 import { useEffect, useState, useRef } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { auth } from '@/lib/firebase';
@@ -23,7 +10,6 @@ import io from 'socket.io-client';
 
 interface Message {
   _id?: string;
->>>>>>> 5888a72777e7fba0680f56d08f27929f9fec433f
   senderId: string;
   text: string;
   timestamp: number;

@@ -155,10 +155,11 @@ router.post("/update-profile", async (req, res) => {
   }
 });
 
-router.get("/users", async (req, res) => {
+router.get("/users/:user", async (req, res) => {
+  const { user } = req.params;
   try {
     const users = await User.find(
-      {},
+      { isOnline: true, firebaseUid: { $ne: user } },
       {
         firebaseUid: 1,
         name: 1,

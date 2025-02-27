@@ -24,8 +24,12 @@ export default function Discovery() {
         setCurrentUser(user);
         try {
           // Fetch all users from the backend
+          const userId = auth.currentUser?.uid;
+          console.log(userId);
           //const response = await fetch('http://localhost:4200/api/auth/users');
-          const response = await fetch("http://localhost:4200/api/auth/users");
+          const response = await fetch(
+            `http://localhost:4200/api/auth/users/${userId}`
+          );
           if (response.ok) {
             const data = await response.json();
             // Filter out the current user and format the profiles
