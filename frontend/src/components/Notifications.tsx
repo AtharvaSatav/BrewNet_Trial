@@ -73,9 +73,6 @@ export default function Notifications() {
       if (notification.type === "connection_removed") {
         router.push(`/discovery`);
       }
-      if (notification.type === "connection_accepted") {
-        router.push(`/chat/${notification.fromUser.firebaseUid}`);
-      }
     } catch (error) {
       console.error("Error handling notification:", error);
     }
@@ -112,7 +109,8 @@ export default function Notifications() {
                 Connection Accepted! 🎉
               </div>
               <div className={styles.notificationMessage}>
-                You are now connected with {notification.fromUser.name}
+                You are now connected with {notification.fromUser.name}, Go have
+                a chat!
               </div>
               <div className={styles.notificationTime}>
                 {new Date(notification.createdAt).toLocaleTimeString()}
@@ -125,7 +123,7 @@ export default function Notifications() {
                 Connection Removed!
               </div>
               <div className={styles.notificationMessage}>
-                You can no longer chat with {notification.fromUser.name}
+                {notification.fromUser.name} Removed you
               </div>
               <div className={styles.notificationTime}>
                 {new Date(notification.createdAt).toLocaleTimeString()}

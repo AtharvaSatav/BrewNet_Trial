@@ -68,8 +68,6 @@ router.post("/request", async (req, res) => {
       read: false,
     });
 
-    io.to(toUserId).emit("notification", notification);
-
     res.json({ connection });
   } catch (error) {
     console.error("Error sending connection request:", error);
