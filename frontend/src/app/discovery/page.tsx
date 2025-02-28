@@ -80,6 +80,13 @@ export default function Discovery() {
         }),
       });
 
+      await fetch(`http://localhost:4200/api/notifications/readAll/${userId}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
       if (!response.ok) {
         throw new Error("Failed to update sign-out status");
       }

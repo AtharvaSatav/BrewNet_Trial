@@ -70,6 +70,12 @@ export default function Notifications() {
       if (notification.type === "connection_request") {
         router.push(`/profile/${notification.fromUser.firebaseUid}`);
       }
+      if (notification.type === "connection_removed") {
+        router.push(`/discovery`);
+      }
+      if (notification.type === "connection_accepted") {
+        router.push(`/chat/${notification.fromUser.firebaseUid}`);
+      }
     } catch (error) {
       console.error("Error handling notification:", error);
     }
