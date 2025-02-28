@@ -22,7 +22,6 @@ router.post("/verify-token", async (req, res) => {
         interests: [],
         onboardingCompleted: false,
       });
-      console.log("Created new user:", user);
 
       return res.json({
         user,
@@ -31,7 +30,6 @@ router.post("/verify-token", async (req, res) => {
     }
 
     // For existing users, check if onboarding is completed
-    console.log("Existing user onboarding status:", user.onboardingCompleted);
     await User.findOneAndUpdate(
       { firebaseUid: decodedToken.uid.toString() },
       { isOnline: true },
@@ -100,8 +98,6 @@ router.post("/complete-onboarding", async (req, res) => {
     if (!updatedUser) {
       return res.status(404).json({ error: "User not found" });
     }
-
-    console.log("Updated user after onboarding:", updatedUser);
 
     res.json({
       user: updatedUser,

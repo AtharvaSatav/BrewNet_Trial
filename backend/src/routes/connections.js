@@ -87,7 +87,6 @@ router.post("/accept", async (req, res) => {
       User.findOne({ firebaseUid: fromUserId }),
       User.findOne({ firebaseUid: toUserId }),
     ]);
-    console.log(fromUser);
 
     const connection = await Connection.findOneAndUpdate(
       {
@@ -156,7 +155,6 @@ router.post("/auto-accept/:requestId", async (req, res) => {
       setTimeout(() => {
         // Update the connection status in memory or temporary storage
         // This is just for simulation
-        // console.log(Dummy user ${toUserId} accepted connection request);
       }, 5000); // 5 seconds delay
 
       return res.json({
