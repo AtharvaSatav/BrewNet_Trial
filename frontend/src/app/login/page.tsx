@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { auth } from "@/lib/firebase";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import styles from "./page.module.css";
+import { API_BASE_URL } from '@/config/constants';
 
 export default function Login() {
   const router = useRouter();
@@ -21,17 +22,14 @@ export default function Login() {
       const result = await signInWithPopup(auth, provider);
       const idToken = await result.user.getIdToken();
 
-      // Update backend URL
-      const response = await fetch(
-        "http://localhost:4200/api/auth/verify-token",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ token: idToken }),
-        }
-      );
+      // Update backend URL to use API_BASE_URL
+      const response = await fetch(`${API_BASE_URL}/api/auth/verify-token`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ token: idToken }),
+      });
 
       if (!response.ok) {
         throw new Error("Authentication failed");

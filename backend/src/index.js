@@ -16,8 +16,9 @@ const server = http.createServer(app);
 // Middleware
 app.use(
   cors({
-    origin: "*",
+    origin: process.env.FRONTEND_URL || "https://brewnet.fly.dev",
     methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true
   })
 );
 app.use(express.json());
@@ -36,7 +37,7 @@ app.get("/api/health", (req, res) => {
 // Connect to MongoDB
 connectDB();
 
-const PORT = process.env.PORT || 4200;
+const PORT = process.env.PORT || 8080;
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

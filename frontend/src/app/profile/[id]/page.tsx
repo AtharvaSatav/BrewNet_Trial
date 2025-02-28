@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { auth } from "@/lib/firebase";
 import styles from "./page.module.css";
+import { API_BASE_URL } from '@/config/constants';
 
 interface ConnectionStatus {
   status: "none" | "pending" | "accepted";
@@ -59,7 +60,7 @@ export default function ProfilePage() {
 
         // Check if backend is available
         try {
-          const healthCheck = await fetch("http://localhost:4200/api/health");
+          const healthCheck = await fetch(`${API_BASE_URL}/api/health`);
           if (!healthCheck.ok) {
             throw new Error("Backend server not available");
           }
@@ -72,9 +73,7 @@ export default function ProfilePage() {
 
         // Fetch profile data with error handling
         try {
-          const profileResponse = await fetch(
-            `http://localhost:4200/api/auth/user/${params.id}`
-          );
+          const profileResponse = await fetch(`${API_BASE_URL}/api/auth/user/${params.id}`);
           if (!profileResponse.ok) {
             throw new Error(
               `Failed to fetch profile: ${profileResponse.statusText}`
@@ -85,7 +84,7 @@ export default function ProfilePage() {
 
           // Fetch connection status
           const connectionResponse = await fetch(
-            `http://localhost:4200/api/connections/status/${currentUser.uid}/${params.id}`
+            `${API_BASE_URL}/api/connections/status/${currentUser.uid}/${params.id}`
           );
           if (!connectionResponse.ok) {
             throw new Error(
@@ -123,7 +122,7 @@ export default function ProfilePage() {
       }
 
       const response = await fetch(
-        "http://localhost:4200/api/connections/request",
+        `${API_BASE_URL}/api/connections/request`,
         {
           //const response = await fetch('http://192.168.1.3:5000/api/connections/request', {
           method: "POST",
@@ -161,7 +160,7 @@ export default function ProfilePage() {
       }
 
       const response = await fetch(
-        "http://localhost:4200/api/connections/accept",
+        `${API_BASE_URL}/api/connections/accept`,
         {
           //const response = await fetch('http://192.168.1.3:5000/api/connections/accept', {
           method: "POST",
@@ -197,7 +196,7 @@ export default function ProfilePage() {
       }
 
       const response = await fetch(
-        `http://localhost:4200/api/connections/${currentUser.uid}/${params.id}`,
+        `${API_BASE_URL}/api/connections/${currentUser.uid}/${params.id}`,
         {
           method: "DELETE",
           headers: {

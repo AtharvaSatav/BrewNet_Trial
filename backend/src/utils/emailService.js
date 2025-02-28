@@ -1,6 +1,8 @@
 const { Resend } = require('resend');
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+const FRONTEND_URL = process.env.FRONTEND_URL || 'https://brewnet.fly.dev';
+
 const sendConnectionRequestEmail = async (toEmail, fromUserName, fromUserId) => {
   try {
     await resend.emails.send({
@@ -13,9 +15,7 @@ const sendConnectionRequestEmail = async (toEmail, fromUserName, fromUserId) => 
           <p>Hello! 👋</p>
           <p><strong>${fromUserName}</strong> would like to connect with you on BrewNet.</p>
           <p>Click the button below to view their profile and respond to this request:</p>
-          <!--<a href="http://localhost:3000/profile/${fromUserId}" -->
-          <!-- TODO: Change the link to the actual profile page -->
-          <a href="https://brewnet.in/profile/${fromUserId}"
+          <a href="${FRONTEND_URL}/profile/${fromUserId}"
              style="display: inline-block; 
                     background-color: #8B4513; 
                     color: white; 
@@ -48,8 +48,7 @@ const sendConnectionAcceptedEmail = async (toEmail, acceptedByName, acceptedByUs
           <p>Great news! 🎉</p>
           <p><strong>${acceptedByName}</strong> has accepted your connection request on BrewNet.</p>
           <p>You can now start chatting and plan your coffee meetup!</p>
-          <!--<a href="http://localhost:3000/chat/${acceptedByUserId}" -->
-          <a href="https://brewnet.in/chat/${acceptedByUserId}"
+          <a href="${FRONTEND_URL}/chat/${acceptedByUserId}"
              style="display: inline-block; 
                     background-color: #8B4513; 
                     color: white; 
@@ -60,8 +59,7 @@ const sendConnectionAcceptedEmail = async (toEmail, acceptedByName, acceptedByUs
             Start Chat
           </a>
           <p style="margin-top: 10px;">
-            <!--<a href="http://localhost:3000/profile/${acceptedByUserId}" -->
-            <a href="https://brewnet.in/profile/${acceptedByUserId}"
+            <a href="${FRONTEND_URL}/profile/${acceptedByUserId}"
                style="color: #8B4513; text-decoration: underline;">
               View ${acceptedByName}'s Profile
             </a>

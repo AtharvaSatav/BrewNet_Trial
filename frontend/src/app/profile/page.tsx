@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { auth } from "@/lib/firebase";
 import Navbar from "@/components/Navbar";
+import { API_BASE_URL } from '@/config/constants';
 
 interface UserProfile {
   name: string;
@@ -26,10 +27,7 @@ export default function Profile() {
       }
 
       try {
-        //const response = await fetch(`http://localhost:4200/api/auth/user/${user.uid}`);
-        const response = await fetch(
-          `http://localhost:4200/api/auth/user/${user.uid}`
-        );
+        const response = await fetch(`${API_BASE_URL}/api/auth/user/${user.uid}`);
         if (!response.ok) throw new Error("Failed to fetch profile");
 
         const data = await response.json();

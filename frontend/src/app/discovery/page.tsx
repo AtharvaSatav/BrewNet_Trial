@@ -7,6 +7,7 @@ import { signOut } from "firebase/auth";
 import { Profile } from "@/types/profile";
 import ClientNotifications from "@/components/ClientNotifications";
 import styles from "./page.module.css";
+import { API_BASE_URL } from '@/config/constants';
 
 export default function Discovery() {
   const router = useRouter();
@@ -24,9 +25,7 @@ export default function Discovery() {
       try {
         console.log("Fetching profiles for user:", userId);
 
-        const response = await fetch(
-          `http://localhost:4200/api/auth/users/${userId}`
-        );
+        const response = await fetch(`${API_BASE_URL}/api/auth/users/${userId}`);
 
         if (!response.ok) {
           throw new Error("Failed to fetch profiles");
@@ -70,17 +69,15 @@ export default function Discovery() {
       if (!userId) return;
 
       // Update user's status in database
-      const response = await fetch("http://localhost:4200/api/auth/sign-out", {
+      const response = await fetch(`${API_BASE_URL}/api/auth/sign-out`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          userId,
-        }),
+        body: JSON.stringify({ userId }),
       });
 
-      await fetch(`http://localhost:4200/api/notifications/readAll/${userId}`, {
+      await fetch(`${API_BASE_URL}/api/notifications/readAll/${userId}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",

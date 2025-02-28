@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { auth } from "@/lib/firebase";
 import { AVAILABLE_INTERESTS } from "@/types/onboarding";
 import Navbar from "@/components/Navbar";
+import { API_BASE_URL } from '@/config/constants';
 
 interface UserProfile {
   name: string;
@@ -32,9 +33,7 @@ export default function EditProfile() {
       }
 
       try {
-        const response = await fetch(
-          `http://localhost:4200/api/auth/user/${user.uid}`
-        );
+        const response = await fetch(`${API_BASE_URL}/api/auth/user/${user.uid}`);
         if (!response.ok) throw new Error("Failed to fetch profile");
 
         const data = await response.json();
@@ -65,16 +64,13 @@ export default function EditProfile() {
 
       console.log("Sending profile update:", profile);
 
-      const response = await fetch(
-        `http://localhost:4200/api/auth/update-profile/${user.uid}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(profile),
-        }
-      );
+      const response = await fetch(`${API_BASE_URL}/api/auth/update-profile/${user.uid}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(profile),
+      });
 
       if (!response.ok) throw new Error("Failed to update profile");
 

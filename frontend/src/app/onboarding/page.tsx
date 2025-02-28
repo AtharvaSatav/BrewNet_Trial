@@ -4,6 +4,7 @@ import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { auth } from "@/lib/firebase";
 import styles from "./page.module.css";
+import { API_BASE_URL } from '@/config/constants';
 
 interface OnboardingData {
   name: string;
@@ -54,9 +55,7 @@ function OnboardingContent() {
         }
 
         if (isUpdate) {
-          const response = await fetch(
-            `http://localhost:4200/api/auth/check-user/${user.uid}`
-          );
+          const response = await fetch(`${API_BASE_URL}/api/auth/check-user/${user.uid}`);
           if (response.ok) {
             const profile = await response.json();
             setData({
@@ -97,17 +96,14 @@ function OnboardingContent() {
         }
 
         const endpoint = isUpdate ? "update-profile" : "complete-onboarding";
-        const response = await fetch(
-          `http://localhost:4200/api/auth/${endpoint}`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              firebaseUid: user.uid,
-              ...data,
-            }),
-          }
-        );
+        const response = await fetch(`${API_BASE_URL}/api/auth/${endpoint}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            firebaseUid: user.uid,
+            ...data,
+          }),
+        });
 
         if (response.ok) {
           router.push("/discovery");

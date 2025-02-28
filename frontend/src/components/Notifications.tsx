@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { auth } from "@/lib/firebase";
 import styles from "./Notifications.module.css";
 import { useRouter } from "next/navigation";
+import { API_BASE_URL } from '@/config/constants';
 
 interface Notification {
   _id: string;
@@ -28,9 +29,7 @@ export default function Notifications() {
         const user = auth.currentUser;
         if (!user) return;
 
-        const response = await fetch(
-          `http://localhost:4200/api/notifications/${user.uid}`
-        );
+        const response = await fetch(`${API_BASE_URL}/api/notifications/${user.uid}`);
 
         if (response.ok) {
           const data = await response.json();
@@ -54,12 +53,9 @@ export default function Notifications() {
   const handleNotificationClick = async (notification: Notification) => {
     try {
       // Mark notification as read
-      await fetch(
-        `http://localhost:4200/api/notifications/${notification._id}/read`,
-        {
-          method: "PUT",
-        }
-      );
+      await fetch(`${API_BASE_URL}/api/notifications/${notification._id}/read`, {
+        method: "PUT",
+      });
 
       // Remove from list
       setNotifications((prev) =>

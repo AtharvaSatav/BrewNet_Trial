@@ -5,6 +5,7 @@ import { useRouter, useParams } from "next/navigation";
 import { auth } from "@/lib/firebase";
 import styles from "./page.module.css";
 import { signOut } from "firebase/auth";
+import { API_BASE_URL } from '@/config/constants';
 
 interface Message {
   _id?: string;
@@ -105,7 +106,7 @@ export default function ChatRoom() {
 
         // Fetch other user's details
         const userResponse = await fetch(
-          `http://localhost:4200/api/auth/user/${params.id}`,
+          `${API_BASE_URL}/api/auth/user/${params.id}`,
           {
             headers: {
               "Content-Type": "application/json",
@@ -122,7 +123,7 @@ export default function ChatRoom() {
 
         // Fetch chat history
         const chatResponse = await fetch(
-          `http://localhost:4200/api/chat/history/${currentUser.uid}/${params.id}`,
+          `${API_BASE_URL}/api/chat/history/${currentUser.uid}/${params.id}`,
           {
             headers: {
               "Content-Type": "application/json",
@@ -156,7 +157,7 @@ export default function ChatRoom() {
         if (!currentUser) return;
 
         const chatResponse = await fetch(
-          `http://localhost:4200/api/chat/history/${currentUser.uid}/${params.id}`,
+          `${API_BASE_URL}/api/chat/history/${currentUser.uid}/${params.id}`,
           {
             headers: {
               "Content-Type": "application/json",
@@ -199,7 +200,7 @@ export default function ChatRoom() {
         return;
       }
 
-      const response = await fetch("http://localhost:4200/api/chat/message", {
+      const response = await fetch(`${API_BASE_URL}/api/chat/message`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -249,7 +250,7 @@ export default function ChatRoom() {
       if (!userId) return;
 
       // Update user's status in database
-      const response = await fetch("http://localhost:4200/api/auth/sign-out", {
+      const response = await fetch(`${API_BASE_URL}/api/auth/sign-out`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -291,7 +292,7 @@ export default function ChatRoom() {
       setMessages((prev) => [...prev, newMessage]);
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
 
-      const response = await fetch("http://localhost:4200/api/chat/message", {
+      const response = await fetch(`${API_BASE_URL}/api/chat/message`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
