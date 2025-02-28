@@ -3,7 +3,6 @@
 import { useEffect, useState, useRef } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { auth } from "@/lib/firebase";
-import Image from "next/image";
 import styles from "./page.module.css";
 import { signOut } from "firebase/auth";
 
@@ -94,7 +93,7 @@ export default function ChatRoom() {
     }
   }, [messages, chatId]);
   useEffect(() => {
-    let intervalId: number;
+    let intervalId: any;
 
     const fetchUserAndMessages = async () => {
       try {

@@ -15,37 +15,51 @@ export default function Discovery() {
   const [error, setError] = useState<string | null>(null);
   const [showMenu, setShowMenu] = useState(false);
   const [currentUser, setCurrentUser] = useState<any>(null);
-
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged(async (user) => {
-      if (!user) {
-        router.push("/login");
-      } else {
-        setCurrentUser(user);
-        try {
-          // Fetch all users from the backend
-          const userId = auth.currentUser?.uid;
-          console.log(userId);
-          //const response = await fetch('http://localhost:4200/api/auth/users');
-          const response = await fetch(
-            `http://localhost:4200/api/auth/users/${userId}`
-          );
-          if (response.ok) {
-            const data = await response.json();
-            setProfiles(data);
-          } else {
-            throw new Error("Failed to fetch profiles");
-          }
-        } catch (error) {
-          console.error("Error fetching profiles:", error);
-          setError("Failed to load profiles");
-        } finally {
-          setLoading(false);
+    let pollingInterval: NodeJS.Timeout;
+    let unsubscribe: (() => void) | null = null;
+
+    // **Fetch user profiles**
+    const fetchProfiles = async (userId: string) => {
+      try {
+        console.log("Fetching profiles for user:", userId);
+
+        const response = await fetch(
+          `http://localhost:4200/api/auth/users/${userId}`
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch profiles");
         }
+
+        const data = await response.json();
+        setProfiles(data);
+      } catch (error) {
+        console.error("Error fetching profiles:", error);
+        setError("Failed to load profiles");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    // **Handle Firebase Authentication**
+    unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        setCurrentUser(user);
+        fetchProfiles(user.uid); // Fetch immediately
+
+        // **Start polling every 1 second**
+        pollingInterval = setInterval(() => fetchProfiles(user.uid), 1000);
+      } else {
+        router.push("/login");
       }
     });
 
-    return () => unsubscribe();
+    // **Cleanup on unmount**
+    return () => {
+      if (unsubscribe) unsubscribe();
+      if (pollingInterval) clearInterval(pollingInterval);
+    };
   }, [router]);
 
   const handleSignOut = async () => {

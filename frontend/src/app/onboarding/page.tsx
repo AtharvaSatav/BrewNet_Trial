@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { auth } from "@/lib/firebase";
 import styles from "./page.module.css";
@@ -23,11 +23,18 @@ const INTERESTS = [
 ];
 
 export default function OnboardingPage() {
+  return (
+    <Suspense fallback={<Loading />}>
+      <OnboardingContent />
+    </Suspense>
+  );
+}
+
+function OnboardingContent() {
   const router = useRouter();
-  const searchParams = useSearchParams();
+  const searchParams = useSearchParams(); // ✅ Now inside Suspense
   const isUpdate = searchParams.get("update") === "true";
   const [loading, setLoading] = useState(true);
-
   const [step, setStep] = useState(1);
   const [data, setData] = useState<OnboardingData>({
     name: "",
@@ -47,7 +54,6 @@ export default function OnboardingPage() {
         }
 
         if (isUpdate) {
-          //const response = await fetch(`http://localhost:4200/api/auth/check-user/${user.uid}`);
           const response = await fetch(
             `http://localhost:4200/api/auth/check-user/${user.uid}`
           );
@@ -91,7 +97,6 @@ export default function OnboardingPage() {
         }
 
         const endpoint = isUpdate ? "update-profile" : "complete-onboarding";
-        //const response = await fetch(`http://localhost:4200/api/auth/${endpoint}`, {
         const response = await fetch(
           `http://localhost:4200/api/auth/${endpoint}`,
           {
@@ -129,12 +134,7 @@ export default function OnboardingPage() {
   };
 
   if (loading) {
-    return (
-      <div className={styles.container}>
-        <div className={styles.overlay} />
-        <div className="text-white text-center">Loading...</div>
-      </div>
-    );
+    return <Loading />;
   }
 
   return (
@@ -232,4 +232,8 @@ export default function OnboardingPage() {
       </div>
     </div>
   );
+}
+
+function Loading() {
+  return <div className="text-white text-center">Loading...</div>;
 }
