@@ -42,79 +42,111 @@
   color: #666;
 }
 
-.button {
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.input {
+  padding: 0.75rem 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #8B4513;
+  box-shadow: 0 0 0 2px rgba(139, 69, 19, 0.1);
+}
+
+.emailButton {
+  padding: 0.75rem;
+  background-color: #8B4513;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.emailButton:hover {
+  background-color: #6B3410;
+}
+
+.divider {
   display: flex;
   align-items: center;
-  justify-content: center;
-  width: 100%;
-  padding: 0.75rem 1rem;
-  background-color: white;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 1rem;
-  color: #333;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+  text-align: center;
+  margin: 1.5rem 0;
+  color: #666;
 }
 
-.button:hover {
-  background-color: var(--button-hover-color);
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid #ddd;
 }
 
-.button img {
-  margin-right: 0.5rem;
-}
-
-@media (max-width: 600px) {
-  .card {
-    max-width: 90%;
-    padding: 1.5rem;
-  }
+.divider span {
+  padding: 0 1rem;
 }
 
 .googleButton {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  gap: 0.75rem;
   width: 100%;
-  padding: 12px 24px;
+  padding: 0.75rem;
   background-color: white;
-  color: #333;
   border: 1px solid #ddd;
   border-radius: 8px;
-  font-size: 16px;
-  font-weight: 500;
+  font-size: 1rem;
   cursor: pointer;
   transition: all 0.2s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  position: relative;
 }
 
 .googleButton:hover {
   background-color: #f8f8f8;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  transform: translateY(-1px);
 }
 
-.googleButton:disabled {
-  background-color: #f5f5f5;
-  cursor: not-allowed;
-  opacity: 0.7;
+.toggle {
+  text-align: center;
+  margin-top: 1.5rem;
+  color: #666;
 }
 
-.googleLogo {
-  width: 20px;
-  height: 20px;
-  object-fit: contain;
+.toggleButton {
+  color: #8B4513;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.toggleButton:hover {
+  text-decoration: underline;
 }
 
 .error {
   background-color: #FEE2E2;
   border: 1px solid #EF4444;
   color: #B91C1C;
-  padding: 12px;
+  padding: 0.75rem;
   border-radius: 8px;
-  margin-bottom: 16px;
-  font-size: 14px;
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+}
+
+@media (max-width: 640px) {
+  .card {
+    margin: 1rem;
+    padding: 1.5rem;
+  }
 }
