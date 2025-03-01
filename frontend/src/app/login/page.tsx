@@ -63,12 +63,28 @@ export default function Login() {
   };
 
   const handleGoogleSignIn = async () => {
+    if (loading) return; // Prevent multiple clicks while loading
+
     try {
       setLoading(true);
       setError(null);
       
       const provider = new GoogleAuthProvider();
-      const result = await signInWithPopup(auth, provider);
+      const result = await signInWithPopup(auth, provider)
+        .catch((error) => {
+          // Handle popup closed error silently
+          if (error.code === 'auth/popup-closed-by-user') {
+            return null;
+          }
+          throw error; // Rethrow other errors
+        });
+
+      // If user closed the popup, just return
+      if (!result) {
+        setLoading(false);
+        return;
+      }
+
       const idToken = await result.user.getIdToken();
 
       const response = await fetch(`${API_BASE_URL}/api/auth/verify-token`, {
@@ -146,7 +162,7 @@ export default function Login() {
             height={20}
             className={styles.googleLogo}
           />
-          Continue with Google
+          {loading ? 'Signing in...' : 'Continue with Google'}
         </button>
 
         <p className={styles.toggle}>
