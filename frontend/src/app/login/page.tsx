@@ -63,23 +63,26 @@ export default function Login() {
   };
 
   const handleGoogleSignIn = async () => {
-    if (loading) return; // Prevent multiple clicks while loading
+    if (loading) return;
 
     try {
       setLoading(true);
       setError(null);
       
       const provider = new GoogleAuthProvider();
+      // Allow any Google account
+      provider.setCustomParameters({
+        prompt: 'select_account'  // Always show account selection
+      });
+
       const result = await signInWithPopup(auth, provider)
         .catch((error) => {
-          // Handle popup closed error silently
           if (error.code === 'auth/popup-closed-by-user') {
             return null;
           }
-          throw error; // Rethrow other errors
+          throw error;
         });
 
-      // If user closed the popup, just return
       if (!result) {
         setLoading(false);
         return;
@@ -158,9 +161,9 @@ export default function Login() {
           <Image 
             src="/google-logo.svg" 
             alt="Google" 
-            width={20}
-            height={20}
-            className={styles.googleLogo}
+            width={20} 
+            height={20} 
+            className={styles.googleLogo} 
           />
           {loading ? 'Signing in...' : 'Continue with Google'}
         </button>
