@@ -16,6 +16,7 @@ interface Profile {
   name: string;
   interests: string[];
   gender: string;
+  bio?: string;
 }
 
 // Helper function to get connection status from localStorage
@@ -50,6 +51,26 @@ export default function ProfilePage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        console.log("Fetching profile for:", params.id);
+        const response = await fetch(`${API_BASE_URL}/api/auth/user/${params.id}`);
+        const data = await response.json();
+        console.log("Received profile data:", data);
+        if (response.ok) {
+          setProfile(data.user);
+        }
+      } catch (error) {
+        console.error("Error fetching profile:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, [params.id]);
+
+  useEffect(() => {
     const fetchProfileAndConnection = async () => {
       try {
         const currentUser = auth.currentUser;
@@ -71,43 +92,27 @@ export default function ProfilePage() {
           return;
         }
 
-        // Fetch profile data with error handling
-        try {
-          const profileResponse = await fetch(`${API_BASE_URL}/api/auth/user/${params.id}`);
-          if (!profileResponse.ok) {
-            throw new Error(
-              `Failed to fetch profile: ${profileResponse.statusText}`
-            );
-          }
-          const profileData = await profileResponse.json();
-          setProfile(profileData.user);
-
-          // Fetch connection status
-          const connectionResponse = await fetch(
-            `${API_BASE_URL}/api/connections/status/${currentUser.uid}/${params.id}`
-          );
-          if (!connectionResponse.ok) {
-            throw new Error(
-              `Failed to fetch connection status: ${connectionResponse.statusText}`
-            );
-          }
-          const connectionData = await connectionResponse.json();
-          setConnectionStatus(connectionData);
-        } catch (error) {
-          console.error("Data fetching error:", error);
-          setError(
-            error instanceof Error
-              ? error.message
-              : "An unexpected error occurred"
+        // Fetch connection status
+        const connectionResponse = await fetch(
+          `${API_BASE_URL}/api/connections/status/${currentUser.uid}/${params.id}`
+        );
+        if (!connectionResponse.ok) {
+          throw new Error(
+            `Failed to fetch connection status: ${connectionResponse.statusText}`
           );
         }
-
-        setLoading(false);
+        const connectionData = await connectionResponse.json();
+        setConnectionStatus(connectionData);
       } catch (error) {
-        console.error("General error:", error);
-        setError("An unexpected error occurred");
-        setLoading(false);
+        console.error("Data fetching error:", error);
+        setError(
+          error instanceof Error
+            ? error.message
+            : "An unexpected error occurred"
+        );
       }
+
+      setLoading(false);
     };
 
     fetchProfileAndConnection();
@@ -257,6 +262,13 @@ export default function ProfilePage() {
               {interest}
             </span>
           ))}
+        </div>
+
+        <div className={styles.bioSection}>
+          <h3 className={styles.bioLabel}>Bio</h3>
+          <p className={styles.bioText}>
+            {profile.bio ? profile.bio : '-'}
+          </p>
         </div>
 
         {!isOwnProfile && (

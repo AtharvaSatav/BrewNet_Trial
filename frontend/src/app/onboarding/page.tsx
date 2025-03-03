@@ -8,8 +8,9 @@ import { API_BASE_URL } from '@/config/constants';
 
 interface OnboardingData {
   name: string;
-  gender: "male" | "female" | "other" | "";
+  gender: "male" | "female" | "Prefer not to say" | "";
   interests: string[];
+  bio?: string;
 }
 
 const INTERESTS = [
@@ -41,6 +42,7 @@ function OnboardingContent() {
     name: "",
     gender: "",
     interests: [],
+    bio: "",
   });
   const [error, setError] = useState<string | null>(null);
 
@@ -62,6 +64,7 @@ function OnboardingContent() {
               name: profile.name || "",
               gender: profile.gender || "",
               interests: profile.interests || [],
+              bio: profile.bio || "",
             });
           }
         }
@@ -80,6 +83,7 @@ function OnboardingContent() {
       if (step === 1) return data.name.trim().length > 0;
       if (step === 2) return data.gender !== "";
       if (step === 3) return data.interests.length > 0;
+      if (step === 4) return true;  // Bio is optional, so always valid
       return false;
     };
 
@@ -87,13 +91,15 @@ function OnboardingContent() {
       return;
     }
 
-    if (step === 3) {
+    if (step === 4) {
       try {
         const user = auth.currentUser;
         if (!user) {
           router.push("/login");
           return;
         }
+
+        console.log("Sending data:", data);
 
         const endpoint = isUpdate ? "update-profile" : "complete-onboarding";
         const response = await fetch(`${API_BASE_URL}/api/auth/${endpoint}`, {
@@ -104,6 +110,9 @@ function OnboardingContent() {
             ...data,
           }),
         });
+
+        const responseData = await response.json();
+        console.log("Response:", responseData);
 
         if (response.ok) {
           router.push("/discovery");
@@ -145,7 +154,7 @@ function OnboardingContent() {
         </div>
 
         <div className={styles.progressBar}>
-          {[1, 2, 3].map((i) => (
+          {[1, 2, 3, 4].map((i) => (
             <div
               key={i}
               className={`${styles.progressStep} ${
@@ -155,7 +164,7 @@ function OnboardingContent() {
           ))}
         </div>
 
-        <div className={styles.stepCounter}>Step {step} of 3</div>
+        <div className={styles.stepCounter}>Step {step} of 4</div>
 
         {step === 1 && (
           <div className={styles.formGroup}>
@@ -215,6 +224,19 @@ function OnboardingContent() {
           </div>
         )}
 
+        {step === 4 && (
+          <div className={styles.formGroup}>
+            <h2 className={styles.title}>Tell us a little about yourself! Just a sentence or two (optional)</h2>
+            <textarea
+              value={data.bio}
+              onChange={(e) => setData({ ...data, bio: e.target.value })}
+              placeholder="Write a brief introduction..."
+              className={styles.textarea}
+              rows={3}
+            />
+          </div>
+        )}
+
         <div className={styles.navigation}>
           {step > 1 && (
             <button onClick={handleBack} className={styles.backButton}>
@@ -222,7 +244,7 @@ function OnboardingContent() {
             </button>
           )}
           <button onClick={handleNext} className={styles.nextButton}>
-            {step === 3 ? "Finish" : "Next"} →
+            {step === 4 ? "Finish" : "Next"} →
           </button>
         </div>
       </div>

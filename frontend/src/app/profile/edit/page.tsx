@@ -6,11 +6,13 @@ import { auth } from "@/lib/firebase";
 import { AVAILABLE_INTERESTS } from "@/types/onboarding";
 import Navbar from "@/components/Navbar";
 import { API_BASE_URL } from '@/config/constants';
+import styles from "@/app/profile/edit/page.module.css";
 
-interface UserProfile {
+interface ProfileData {
   name: string;
   gender: string;
   interests: string[];
+  bio?: string;
 }
 
 export default function EditProfile() {
@@ -18,10 +20,11 @@ export default function EditProfile() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [profile, setProfile] = useState<UserProfile>({
+  const [formData, setFormData] = useState<ProfileData>({
     name: "",
     gender: "",
     interests: [],
+    bio: "",
   });
 
   useEffect(() => {
@@ -37,10 +40,11 @@ export default function EditProfile() {
         if (!response.ok) throw new Error("Failed to fetch profile");
 
         const data = await response.json();
-        setProfile({
+        setFormData({
           name: data.user.name,
           gender: data.user.gender,
           interests: data.user.interests,
+          bio: data.user.bio || "",
         });
       } catch (err) {
         setError("Failed to load profile");
@@ -62,14 +66,14 @@ export default function EditProfile() {
       const user = auth.currentUser;
       if (!user) throw new Error("Not authenticated");
 
-      console.log("Sending profile update:", profile);
+      console.log("Sending profile update:", formData);
 
       const response = await fetch(`${API_BASE_URL}/api/auth/update-profile/${user.uid}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(profile),
+        body: JSON.stringify(formData),
       });
 
       if (!response.ok) throw new Error("Failed to update profile");
@@ -87,7 +91,7 @@ export default function EditProfile() {
   };
 
   const handleInterestToggle = (interest: string) => {
-    setProfile((prev) => ({
+    setFormData((prev) => ({
       ...prev,
       interests: prev.interests.includes(interest)
         ? prev.interests.filter((i) => i !== interest)
@@ -124,7 +128,7 @@ export default function EditProfile() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className={styles.form}>
             <div>
               <label
                 htmlFor="name"
@@ -135,9 +139,9 @@ export default function EditProfile() {
               <input
                 type="text"
                 id="name"
-                value={profile.name}
+                value={formData.name}
                 onChange={(e) =>
-                  setProfile((prev) => ({ ...prev, name: e.target.value }))
+                  setFormData((prev) => ({ ...prev, name: e.target.value }))
                 }
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brown-500 focus:ring-brown-500"
                 required
@@ -153,9 +157,9 @@ export default function EditProfile() {
               </label>
               <select
                 id="gender"
-                value={profile.gender}
+                value={formData.gender}
                 onChange={(e) =>
-                  setProfile((prev) => ({ ...prev, gender: e.target.value }))
+                  setFormData((prev) => ({ ...prev, gender: e.target.value }))
                 }
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brown-500 focus:ring-brown-500"
                 required
@@ -179,7 +183,7 @@ export default function EditProfile() {
                   >
                     <input
                       type="checkbox"
-                      checked={profile.interests.includes(interest)}
+                      checked={formData.interests.includes(interest)}
                       onChange={() => handleInterestToggle(interest)}
                       className="rounded text-brown-600 focus:ring-brown-500"
                     />
@@ -187,6 +191,19 @@ export default function EditProfile() {
                   </label>
                 ))}
               </div>
+            </div>
+
+            <div className={styles.formGroup}>
+              <label>
+                Tell us a little about yourself! Just a sentence or two (optional)
+              </label>
+              <textarea
+                value={formData.bio}
+                onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
+                placeholder="Write a brief introduction..."
+                className={styles.textarea}
+                rows={3}
+              />
             </div>
 
             <div className="flex gap-4">
@@ -200,7 +217,7 @@ export default function EditProfile() {
               <button
                 type="submit"
                 disabled={saving}
-                className="flex-1 px-4 py-2 bg-brown-600 text-white rounded-lg hover:bg-brown-700 disabled:opacity-50"
+                className={styles.submitButton}
               >
                 {saving ? "Saving..." : "Save Changes"}
               </button>

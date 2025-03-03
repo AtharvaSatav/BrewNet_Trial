@@ -72,9 +72,9 @@ router.get("/check-user/:uid", async (req, res) => {
 
 router.post("/complete-onboarding", async (req, res) => {
   try {
-    const { firebaseUid, name, gender, interests } = req.body;
+    const { firebaseUid, name, gender, interests, bio } = req.body;
+    console.log("Received onboarding data:", { firebaseUid, name, gender, interests, bio });
 
-    // Update user and explicitly set onboardingCompleted to true
     const updatedUser = await User.findOneAndUpdate(
       { firebaseUid },
       {
@@ -82,25 +82,26 @@ router.post("/complete-onboarding", async (req, res) => {
           name,
           gender,
           interests,
+          bio,
           onboardingCompleted: true,
         },
       },
       { new: true }
     );
-    const user = await User.findOneAndUpdate(
-      { firebaseUid },
-      {
-        isOnline: true,
-      },
-      { new: true }
-    );
+
+    console.log("Updated user:", updatedUser);
 
     if (!updatedUser) {
       return res.status(404).json({ error: "User not found" });
     }
 
     res.json({
-      user: updatedUser,
+      user: {
+        name: updatedUser.name,
+        gender: updatedUser.gender,
+        interests: updatedUser.interests,
+        bio: updatedUser.bio || "",
+      },
       needsOnboarding: false,
     });
   } catch (error) {
@@ -112,25 +113,22 @@ router.post("/complete-onboarding", async (req, res) => {
 router.get("/user/:firebaseUid", async (req, res) => {
   try {
     const { firebaseUid } = req.params;
-    // Check if it's a dummy profile
-    if (firebaseUid.startsWith("dummy")) {
-      const dummyUser = {
-        firebaseUid,
-        name: "Dummy User",
-        gender: "Not Specified",
-        interests: ["Coffee"],
-        // Add any other required fields
-      };
-      return res.json({ user: dummyUser });
-    }
-
     const user = await User.findOne({ firebaseUid });
+    
+    console.log("Found user:", user);
 
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
 
-    res.json({ user });
+    res.json({
+      user: {
+        name: user.name,
+        gender: user.gender,
+        interests: user.interests,
+        bio: user.bio || "",
+      }
+    });
   } catch (error) {
     console.error("Error fetching user:", error);
     res.status(500).json({ error: "Server error" });
@@ -139,11 +137,11 @@ router.get("/user/:firebaseUid", async (req, res) => {
 
 router.post("/update-profile", async (req, res) => {
   try {
-    const { firebaseUid, name, gender, interests } = req.body;
+    const { firebaseUid, name, gender, interests, bio } = req.body;
 
     const updatedUser = await User.findOneAndUpdate(
       { firebaseUid },
-      { name, gender, interests },
+      { name, gender, interests, bio },
       { new: true }
     );
 

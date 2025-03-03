@@ -1,0 +1,15 @@
+.textarea {
+  width: 100%;
+  padding: 1rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  resize: vertical;
+  min-height: 100px;
+  background: white;
+}
+
+.textarea:focus {
+  outline: none;
+  border-color: #2563eb;
+} 
