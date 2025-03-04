@@ -12,6 +12,9 @@ interface Connection {
   interests: string[];
   status: 'pending' | 'accepted';
   initiator: string;
+  seen: boolean;
+  loginMethod?: string;
+  linkedinUrl?: string;
 }
 
 export default function ConnectionsPage() {
@@ -20,6 +23,7 @@ export default function ConnectionsPage() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'received' | 'sent' | 'connected'>('connected');
   const [error, setError] = useState<string | null>(null);
+  const [unreadCounts, setUnreadCounts] = useState({ newRequests: 0, newConnections: 0 });
 
   useEffect(() => {
     const fetchConnections = async () => {
@@ -47,17 +51,109 @@ export default function ConnectionsPage() {
     fetchConnections();
   }, [router]);
 
-  const filteredConnections = connections.filter(conn => {
-    if (!conn) return false;
-    const currentUser = auth.currentUser?.uid;
-    if (filter === 'received') {
-      return conn.status === 'pending' && conn.initiator !== currentUser;
+  useEffect(() => {
+    const fetchUnreadCounts = async () => {
+      try {
+        const user = auth.currentUser;
+        if (!user) return;
+
+        const response = await fetch(`${API_BASE_URL}/api/connections/unread-counts/${user.uid}`);
+        if (response.ok) {
+          const counts = await response.json();
+          setUnreadCounts(counts);
+        }
+      } catch (error) {
+        console.error("Error fetching unread counts:", error);
+      }
+    };
+
+    fetchUnreadCounts();
+  }, []);
+
+  useEffect(() => {
+    const markAsSeen = async () => {
+      try {
+        const user = auth.currentUser;
+        if (!user) return;
+
+        await fetch(`${API_BASE_URL}/api/connections/mark-seen`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userId: user.uid,
+            type: filter === 'received' ? 'requests' : 'connections'
+          })
+        });
+      } catch (error) {
+        console.error("Error marking as seen:", error);
+      }
+    };
+
+    markAsSeen();
+  }, [filter]);
+
+  const filteredConnections = connections
+    .filter(conn => {
+      if (!conn) return false;
+      const currentUser = auth.currentUser?.uid;
+      if (filter === 'received') {
+        return conn.status === 'pending' && conn.initiator !== currentUser;
+      }
+      if (filter === 'sent') {
+        return conn.status === 'pending' && conn.initiator === currentUser;
+      }
+      return conn.status === 'accepted';
+    })
+    .sort((a, b) => {
+      if (!a.seen && b.seen) return -1;
+      if (a.seen && !b.seen) return 1;
+      
+      return a.name.localeCompare(b.name);
+    });
+
+  const markConnectionAsSeen = async (connectionId: string) => {
+    try {
+      const user = auth.currentUser;
+      if (!user) return;
+
+      await fetch(`${API_BASE_URL}/api/connections/mark-seen`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: user.uid,
+          connectionId
+        })
+      });
+
+      setConnections(prevConnections => 
+        prevConnections.map(conn => 
+          conn.firebaseUid === connectionId 
+            ? { ...conn, seen: true }
+            : conn
+        )
+      );
+    } catch (error) {
+      console.error("Error marking connection as seen:", error);
     }
-    if (filter === 'sent') {
-      return conn.status === 'pending' && conn.initiator === currentUser;
-    }
-    return conn.status === 'accepted';
-  });
+  };
+
+  const getUnseenCounts = () => {
+    return {
+      newRequests: connections.filter(conn => 
+        !conn.seen && 
+        conn.status === 'pending' && 
+        conn.initiator !== auth.currentUser?.uid
+      ).length,
+      newConnections: connections.filter(conn => 
+        !conn.seen && 
+        conn.status === 'accepted'
+      ).length
+    };
+  };
+
+  useEffect(() => {
+    setUnreadCounts(getUnseenCounts());
+  }, [connections]);
 
   if (loading) {
     return <div className={styles.loading}>Loading connections...</div>;
@@ -87,12 +183,18 @@ export default function ConnectionsPage() {
           onClick={() => setFilter('connected')}
         >
           Connected
+          {unreadCounts.newConnections > 0 && (
+            <span className={styles.badge}>{unreadCounts.newConnections}</span>
+          )}
         </button>
         <button 
           className={`${styles.filterButton} ${filter === 'received' ? styles.active : ''}`}
           onClick={() => setFilter('received')}
         >
           Requests Received
+          {unreadCounts.newRequests > 0 && (
+            <span className={styles.badge}>{unreadCounts.newRequests}</span>
+          )}
         </button>
         <button 
           className={`${styles.filterButton} ${filter === 'sent' ? styles.active : ''}`}
@@ -106,6 +208,7 @@ export default function ConnectionsPage() {
         {Array.isArray(filteredConnections) && filteredConnections.map((connection) => (
           connection && (
             <div key={connection.firebaseUid} className={styles.connectionCard}>
+              {!connection.seen && <div className={styles.newTag}>New</div>}
               <h2 className={styles.connectionName}>{connection.name}</h2>
               <div className={styles.interestsContainer}>
                 {connection.interests && connection.interests.map((interest) => (
@@ -114,6 +217,18 @@ export default function ConnectionsPage() {
                   </span>
                 ))}
               </div>
+              
+              {connection.loginMethod === 'linkedin' && (
+                <a 
+                  href={connection.linkedinUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.linkedinLink}
+                >
+                  <i className="fab fa-linkedin"></i> View LinkedIn Profile
+                </a>
+              )}
+
               <div className={styles.status}>
                 {connection.status === 'pending' ? (
                   connection.initiator === auth.currentUser?.uid ? 
@@ -122,7 +237,10 @@ export default function ConnectionsPage() {
                 ) : "Connected"}
               </div>
               <button
-                onClick={() => router.push(`/profile/${connection.firebaseUid}`)}
+                onClick={() => {
+                  markConnectionAsSeen(connection.firebaseUid);
+                  router.push(`/profile/${connection.firebaseUid}`);
+                }}
                 className={styles.viewButton}
               >
                 View Profile

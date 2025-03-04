@@ -16,6 +16,8 @@ export default function Discovery() {
   const [error, setError] = useState<string | null>(null);
   const [showMenu, setShowMenu] = useState(false);
   const [currentUser, setCurrentUser] = useState<any>(null);
+  const [unreadCounts, setUnreadCounts] = useState({ newRequests: 0, newConnections: 0 });
+
   useEffect(() => {
     let pollingInterval: NodeJS.Timeout;
     let unsubscribe: (() => void) | null = null;
@@ -60,6 +62,29 @@ export default function Discovery() {
       if (pollingInterval) clearInterval(pollingInterval);
     };
   }, [router]);
+
+  useEffect(() => {
+    const fetchUnreadCounts = async () => {
+      try {
+        const user = auth.currentUser;
+        if (!user) return;
+
+        const response = await fetch(`${API_BASE_URL}/api/connections/unread-counts/${user.uid}`);
+        if (response.ok) {
+          const counts = await response.json();
+          console.log("Unread counts:", counts);
+          setUnreadCounts(counts);
+        }
+      } catch (error) {
+        console.error("Error fetching unread counts:", error);
+      }
+    };
+
+    fetchUnreadCounts();
+    // Poll more frequently during testing
+    const interval = setInterval(fetchUnreadCounts, 5000); // Changed to 5 seconds
+    return () => clearInterval(interval);
+  }, []);
 
   const handleSignOut = async () => {
     try {
@@ -124,6 +149,11 @@ export default function Discovery() {
             onClick={() => router.push('/connections')}
           >
             My Connections
+            {(unreadCounts.newRequests + unreadCounts.newConnections) > 0 && (
+              <span className={styles.badge}>
+                {unreadCounts.newRequests + unreadCounts.newConnections}
+              </span>
+            )}
           </button>
           <div className={styles.profileMenu}>
             <button
