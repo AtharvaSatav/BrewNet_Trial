@@ -144,6 +144,19 @@
   font-size: 0.875rem;
 }
 
+.socialButtons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+/* Update the existing styles */
+.googleButton,
+.linkedinButton {
+  width: 220px;
+  margin: 0 auto;
+}
+
 @media (max-width: 640px) {
   .card {
     margin: 1rem;

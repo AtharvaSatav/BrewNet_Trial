@@ -206,4 +206,87 @@ router.post("/sign-out", async (req, res) => {
   }
 });
 
+// Add these functions at the top of the file
+async function exchangeLinkedInCodeForToken(code) {
+  const myHeaders = new Headers();
+  myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
+
+  const urlencoded = new URLSearchParams();
+  urlencoded.append("grant_type", "authorization_code");
+  urlencoded.append("code", code);
+  urlencoded.append("redirect_uri", process.env.LINKEDIN_REDIRECTION_URI);
+  urlencoded.append("client_id", process.env.LINKEDIN_CLIENT_ID);
+  urlencoded.append("client_secret", process.env.LINKEDIN_CLIENT_SECRET);
+
+  const requestOptions = {
+    method: "POST",
+    headers: myHeaders,
+    body: urlencoded,
+    redirect: "follow",
+  };
+
+  const response = await fetch(process.env.LINKEDIN_ACCESS_TOKEN_URL, requestOptions);
+  const result = await response.text();
+  const res = JSON.parse(result);
+  return res.access_token;
+}
+
+async function retrieveMemberDetails(accessToken) {
+  const myHeaders = new Headers();
+  myHeaders.append("Authorization", `Bearer ${accessToken}`);
+
+  const requestOptions = {
+    method: "GET",
+    headers: myHeaders,
+    redirect: "follow",
+  };
+
+  const response = await fetch(process.env.LINKEDIN_USERINFO, requestOptions);
+  const result = await response.json();
+  return {
+    name: result.name,
+    profile: result.picture,
+    email: result.email,
+  };
+}
+
+// Update the LinkedIn authentication endpoint
+router.post('/linkedin', async (req, res) => {
+  try {
+    const { code } = req.body;
+
+    // Exchange code for access token
+    const accessToken = await exchangeLinkedInCodeForToken(code);
+    
+    // Get user profile from LinkedIn
+    const profileData = await retrieveMemberDetails(accessToken);
+
+    // Create or update user in database
+    let user = await User.findOne({ email: profileData.email });
+
+    if (!user) {
+      user = await User.create({
+        firebaseUid: `linkedin_${Date.now()}`,
+        email: profileData.email,
+        name: profileData.name,
+        photoURL: profileData.profile,
+        onboardingCompleted: false,
+      });
+
+      return res.json({
+        user,
+        needsOnboarding: true,
+      });
+    }
+
+    res.json({
+      user,
+      needsOnboarding: !user.onboardingCompleted,
+    });
+  } catch (error) {
+    console.error('LinkedIn auth error:', error);
+    res.status(500).json({ error: 'Authentication failed' });
+  }
+});
+
 module.exports = router;

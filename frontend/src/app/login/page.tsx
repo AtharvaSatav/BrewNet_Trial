@@ -12,11 +12,14 @@ import {
 import styles from "./page.module.css";
 import Image from "next/image";
 import { API_BASE_URL } from '@/config/constants';
+import LinkedIn from '@/components/LinkedIn';
 
 interface LoginForm {
   email: string;
   password: string;
 }
+
+const LINKEDIN_CLIENT_ID = process.env.NEXT_PUBLIC_LINKEDIN_CLIENT_ID || '';
 
 export default function Login() {
   const router = useRouter();
@@ -114,6 +117,40 @@ export default function Login() {
     }
   };
 
+  const handleLinkedInCallback = async (error: string | null, code: string | null, redirectUri: string | null) => {
+    if (error) {
+      console.error('LinkedIn login error:', error);
+      return;
+    }
+
+    if (code) {
+      try {
+        setLoading(true);
+        const response = await fetch(`${API_BASE_URL}/api/auth/linkedin`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ code, redirectUri }),
+        });
+
+        if (!response.ok) throw new Error('LinkedIn authentication failed');
+
+        const data = await response.json();
+        if (data.needsOnboarding) {
+          router.push('/onboarding');
+        } else {
+          router.push('/discovery');
+        }
+      } catch (error) {
+        console.error('LinkedIn auth error:', error);
+        setError('Failed to sign in with LinkedIn');
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+
   return (
     <div className={styles.container}>
       <div className={styles.overlay} />
@@ -167,6 +204,13 @@ export default function Login() {
           />
           {loading ? 'Signing in...' : 'Continue with Google'}
         </button>
+
+        <LinkedIn
+          clientId={LINKEDIN_CLIENT_ID}
+          scope={['openid', 'profile', 'email']}
+          callback={handleLinkedInCallback}
+          className={styles.linkedinButton}
+        />
 
         <p className={styles.toggle}>
           {isSignUp ? 'Already have an account?' : "Don't have an account?"}{' '}

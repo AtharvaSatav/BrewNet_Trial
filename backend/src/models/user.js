@@ -26,6 +26,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: []
   }],
+  bio: String,
   onboardingCompleted: {
     type: Boolean,
     default: false

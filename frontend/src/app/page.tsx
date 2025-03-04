@@ -6,6 +6,9 @@ import { auth } from '@/lib/firebase';
 import { signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword } from 'firebase/auth';
 import styles from './landing.module.css';
 import { API_BASE_URL } from '@/config/constants';
+import LinkedIn from '@/components/LinkedIn';
+
+const LINKEDIN_CLIENT_ID = process.env.NEXT_PUBLIC_LINKEDIN_CLIENT_ID || '';
 
 export default function LandingPage() {
   const router = useRouter();
@@ -88,6 +91,41 @@ export default function LandingPage() {
     }
   };
 
+  const handleLinkedInCallback = async (error: string | null, code: string | null, redirectUri: string | null) => {
+    if (error) {
+      console.error('LinkedIn login error:', error);
+      return;
+    }
+
+    if (code) {
+      try {
+        setLoading(true);
+        // Exchange code for token on your backend
+        const response = await fetch(`${API_BASE_URL}/api/auth/linkedin`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ code, redirectUri }),
+        });
+
+        if (!response.ok) throw new Error('LinkedIn authentication failed');
+
+        const data = await response.json();
+        if (data.needsOnboarding) {
+          router.push('/onboarding');
+        } else {
+          router.push('/discovery');
+        }
+      } catch (error) {
+        console.error('LinkedIn auth error:', error);
+        setError('Failed to sign in with LinkedIn');
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+
   const scrollToHowItWorks = () => {
     const element = document.getElementById('how-it-works');
     if (element) {
@@ -104,65 +142,37 @@ export default function LandingPage() {
             <h1>The Most Interesting Person Here is Waiting to Meet You!</h1>
             <p className={styles.subheading}>BrewNet helps you meet like-minded people in cafés. Sign in, explore, and network effortlessly!</p>
             <div className={styles.ctaButtons}>
-              {!showEmailForm ? (
-                <>
-                  <button 
-                    className={`${styles.btn} ${styles.primary}`} 
-                    onClick={handleGoogleSignIn}
-                    disabled={loading}
-                  >
-                    <i className="fab fa-google"></i> 
-                    {loading ? 'Signing in...' : 'Sign in with Google'}
-                  </button>
-                  <button 
-                    className={`${styles.btn} ${styles.secondary}`}
-                    onClick={() => setShowEmailForm(true)}
-                  >
-                    Sign in with Email
-                  </button>
-                  <button 
-                    className={`${styles.btn} ${styles.secondary}`} 
-                    onClick={scrollToHowItWorks}
-                  >
-                    Learn More
-                  </button>
-                </>
-              ) : (
-                <form onSubmit={handleEmailSignIn} className={styles.emailForm}>
-                  {error && <p className={styles.error}>{error}</p>}
-                  <input
-                    type="email"
-                    placeholder="Email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                  />
-                  <input
-                    type="password"
-                    placeholder="Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                  />
-                  <button 
-                    type="submit" 
-                    className={`${styles.btn} ${styles.primary}`}
-                    disabled={loading}
-                  >
-                    {loading ? 'Signing in...' : 'Sign in'}
-                  </button>
-                  <button 
-                    type="button"
-                    className={`${styles.btn} ${styles.secondary}`}
-                    onClick={() => {
-                      setShowEmailForm(false);
-                      setError('');
-                    }}
-                  >
-                    Back
-                  </button>
-                </form>
-              )}
+              <div className={styles.socialButtons}>
+                <button 
+                  className={`${styles.btn} ${styles.primary}`} 
+                  onClick={handleGoogleSignIn}
+                  disabled={loading}
+                >
+                  <i className="fab fa-google"></i> 
+                  {loading ? 'Signing in...' : 'Sign in with Google'}
+                </button>
+                
+                <LinkedIn
+                  clientId={LINKEDIN_CLIENT_ID}
+                  scope={['openid', 'profile', 'email']}
+                  callback={handleLinkedInCallback}
+                  className={styles.btn}
+                />
+              </div>
+
+              <button 
+                className={`${styles.btn} ${styles.secondary}`}
+                onClick={() => setShowEmailForm(true)}
+              >
+                Sign in with Email
+              </button>
+
+              <button 
+                className={`${styles.btn} ${styles.secondary}`} 
+                onClick={scrollToHowItWorks}
+              >
+                Learn More
+              </button>
             </div>
           </div>
         </div>
@@ -256,22 +266,32 @@ export default function LandingPage() {
         <div className={styles.container}>
           <h2>Find your next great conversation over coffee!</h2>
           {!showEmailForm ? (
-            <>
-              <button 
-                className={`${styles.btn} ${styles.primary}`} 
-                onClick={handleGoogleSignIn}
-                disabled={loading}
-              >
-                <i className="fab fa-google"></i> 
-                {loading ? 'Signing in...' : 'Sign in with Google'}
-              </button>
+            <div className={styles.ctaButtons}>
+              <div className={styles.socialButtons}>
+                <button 
+                  className={`${styles.btn} ${styles.primary}`} 
+                  onClick={handleGoogleSignIn}
+                  disabled={loading}
+                >
+                  <i className="fab fa-google"></i> 
+                  {loading ? 'Signing in...' : 'Sign in with Google'}
+                </button>
+                
+                <LinkedIn
+                  clientId={LINKEDIN_CLIENT_ID}
+                  scope={['openid', 'profile', 'email']}
+                  callback={handleLinkedInCallback}
+                  className={styles.btn}
+                />
+              </div>
+
               <button 
                 className={`${styles.btn} ${styles.primary}`}
                 onClick={() => setShowEmailForm(true)}
               >
                 Sign in with Email
               </button>
-            </>
+            </div>
           ) : (
             <form onSubmit={handleEmailSignIn} className={styles.emailForm}>
               {error && <p className={styles.error}>{error}</p>}
