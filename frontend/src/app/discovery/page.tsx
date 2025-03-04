@@ -118,35 +118,43 @@ export default function Discovery() {
       <div className={styles.overlay} />
       <header className={styles.header}>
         <div className={styles.brandName}>BrewNet</div>
-        <div className={styles.profileMenu}>
+        <div className={styles.headerButtons}>
           <button
-            className={styles.profileButton}
-            onClick={() => setShowMenu(!showMenu)}
+            className={styles.connectionsButton}
+            onClick={() => router.push('/connections')}
           >
-            My Profile
+            My Connections
           </button>
-          {showMenu && (
-            <div className={styles.menuDropdown}>
-              <div
-                className={styles.menuItem}
-                onClick={() => router.push(`/profile/${currentUser?.uid}`)}
-              >
-                View Profile
+          <div className={styles.profileMenu}>
+            <button
+              className={styles.profileButton}
+              onClick={() => setShowMenu(!showMenu)}
+            >
+              My Profile
+            </button>
+            {showMenu && (
+              <div className={styles.menuDropdown}>
+                <div
+                  className={styles.menuItem}
+                  onClick={() => router.push(`/profile/${currentUser?.uid}`)}
+                >
+                  View Profile
+                </div>
+                <div
+                  className={styles.menuItem}
+                  onClick={() => router.push("/onboarding?update=true")}
+                >
+                  Edit Profile
+                </div>
+                <div
+                  className={`${styles.menuItem} ${styles.signOutButton}`}
+                  onClick={handleSignOut}
+                >
+                  Sign Out
+                </div>
               </div>
-              <div
-                className={styles.menuItem}
-                onClick={() => router.push("/onboarding?update=true")}
-              >
-                Edit Profile
-              </div>
-              <div
-                className={`${styles.menuItem} ${styles.signOutButton}`}
-                onClick={handleSignOut}
-              >
-                Sign Out
-              </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </header>
 

@@ -227,4 +227,26 @@
   .header {
     padding: 1rem;
   }
+}
+
+.headerButtons {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.connectionsButton {
+  padding: 0.5rem 1rem;
+  background-color: transparent;
+  color: #8B4513;
+  border: 2px solid #8B4513;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.connectionsButton:hover {
+  background-color: #8B4513;
+  color: white;
 } 

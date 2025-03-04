@@ -195,4 +195,56 @@ router.delete("/:fromUserId/:toUserId", async (req, res) => {
   }
 });
 
+// Add this new route to get all connections
+router.get("/all/:userId", async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    // Find all connections where the user is either fromUser or toUser
+    const connections = await Connection.find({
+      $or: [
+        { fromUser: userId },
+        { toUser: userId }
+      ]
+    });
+
+    // Get all unique user IDs from connections
+    const userIds = connections.map(conn => 
+      conn.fromUser === userId ? conn.toUser : conn.fromUser
+    );
+
+    // Fetch user details for all connected users
+    const users = await User.find({
+      firebaseUid: { $in: userIds }
+    });
+
+    // Create a map of user details for quick lookup
+    const userMap = users.reduce((acc, user) => {
+      acc[user.firebaseUid] = user;
+      return acc;
+    }, {});
+
+    // Format the connections with user details
+    const formattedConnections = connections.map(conn => {
+      const otherUserId = conn.fromUser === userId ? conn.toUser : conn.fromUser;
+      const otherUser = userMap[otherUserId];
+
+      if (!otherUser) return null;
+
+      return {
+        firebaseUid: otherUser.firebaseUid,
+        name: otherUser.name,
+        interests: otherUser.interests || [],
+        status: conn.status,
+        initiator: conn.fromUser
+      };
+    }).filter(Boolean); // Remove any null values
+
+    res.json({ connections: formattedConnections });
+  } catch (error) {
+    console.error("Error fetching connections:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
 module.exports = router;

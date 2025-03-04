@@ -1,0 +1,150 @@
+.container {
+  min-height: 100vh;
+  background-image: url("/cafe-background.jpg");
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  padding: 2rem;
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 0;
+}
+
+.header {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.backButton {
+  color: white;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+}
+
+.title {
+  color: white;
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.filterButtons {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.filterButton {
+  padding: 0.75rem 1.5rem;
+  border: 2px solid white;
+  background: transparent;
+  color: white;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.filterButton.active {
+  background: white;
+  color: #8B4513;
+}
+
+.connectionsGrid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 2rem;
+}
+
+.connectionCard {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.connectionName {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.interestsContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.interest {
+  background: #f3f4f6;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  color: #666;
+}
+
+.status {
+  color: #8B4513;
+  font-weight: 500;
+}
+
+.viewButton {
+  padding: 0.75rem;
+  background: #8B4513;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.viewButton:hover {
+  background: #6B3410;
+}
+
+.emptyState {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: white;
+  font-size: 1.25rem;
+  padding: 2rem;
+}
+
+.loading {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.25rem;
+}
+
+.error {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #EF4444;
+  font-size: 1.25rem;
+  text-align: center;
+  padding: 2rem;
+  position: relative;
+  z-index: 1;
+} 
