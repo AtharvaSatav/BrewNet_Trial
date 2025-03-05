@@ -62,6 +62,7 @@
 }
 
 .card {
+  position: relative;
   background-color: rgba(255, 255, 255, 0.95);
   border-radius: 1rem;
   padding: 1.5rem;
@@ -217,7 +218,7 @@
 
 @media (max-width: 640px) {
   .mainContent {
-    padding: 6rem 1rem 1rem;
+    padding: 2rem 1rem 1rem;
   }
 
   .grid {
@@ -226,6 +227,66 @@
 
   .header {
     padding: 1rem;
+    flex-direction: column;
+    position: relative;
+    background: rgb(255, 255, 255);
+  }
+
+  .headerButtons {
+    flex-direction: row;
+    justify-content: center;
+    width: 100%;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .connectionsButton, 
+  .profileButton {
+    font-size: 0.9rem;
+    padding: 0.4rem 0.8rem;
+  }
+
+  .brandName {
+    text-align: center;
+    margin-bottom: 0.5rem;
+    font-size: 1.5rem;
+  }
+
+  .menuDropdown {
+    position: absolute;
+    width: 100%;
+    left: 0;
+    right: 0;
+    top: 100%;
+    margin: 0;
+    margin-left: -10px;
+    border-radius: 0;
+    z-index: 40;
+  }
+
+  .badge {
+    top: -6px;
+    right: -6px;
+    font-size: 0.7rem;
+    min-width: 18px;
+    height: 18px;
+  }
+
+  .title {
+    margin-top: 1rem;
+    font-size: 1.8rem;
+  }
+
+  .subtitle {
+    font-size: 1rem;
+  }
+
+  .messageBadge {
+    top: 0.25rem;
+    right: 0.25rem;
+    padding: 0.2rem 0.4rem;
+    font-size: 0.7rem;
   }
 }
 
@@ -268,4 +329,23 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.messageBadge {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background-color: #2563eb;
+  color: rgb(229, 228, 236);
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  z-index: 10;
+  border-radius: 999px;
+}
+
+.messageBadge i {
+  font-size: 0.75rem;
 }

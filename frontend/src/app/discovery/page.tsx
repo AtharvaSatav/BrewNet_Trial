@@ -22,11 +22,9 @@ export default function Discovery() {
     let pollingInterval: NodeJS.Timeout;
     let unsubscribe: (() => void) | null = null;
 
-    // **Fetch user profiles**
     const fetchProfiles = async (userId: string) => {
       try {
         console.log("Fetching profiles for user:", userId);
-
         const response = await fetch(`${API_BASE_URL}/api/auth/users/${userId}`);
 
         if (!response.ok) {
@@ -34,6 +32,12 @@ export default function Discovery() {
         }
 
         const data = await response.json();
+        console.log("Profiles with message counts:", data);
+        data.forEach((profile: Profile) => {
+          if (profile.unreadMessages && profile.unreadMessages > 0) {
+            console.log(`${profile.name} has ${profile.unreadMessages} unread messages`);
+          }
+        });
         setProfiles(data);
       } catch (error) {
         console.error("Error fetching profiles:", error);
@@ -43,20 +47,17 @@ export default function Discovery() {
       }
     };
 
-    // **Handle Firebase Authentication**
     unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
         setCurrentUser(user);
-        fetchProfiles(user.uid); // Fetch immediately
+        fetchProfiles(user.uid);
 
-        // **Start polling every 1 second**
-        pollingInterval = setInterval(() => fetchProfiles(user.uid), 1000);
+        pollingInterval = setInterval(() => fetchProfiles(user.uid), 5000);
       } else {
         router.push("/login");
       }
     });
 
-    // **Cleanup on unmount**
     return () => {
       if (unsubscribe) unsubscribe();
       if (pollingInterval) clearInterval(pollingInterval);
@@ -81,19 +82,16 @@ export default function Discovery() {
     };
 
     fetchUnreadCounts();
-    // Poll every 30 seconds
     const interval = setInterval(fetchUnreadCounts, 30000);
     return () => clearInterval(interval);
   }, []);
 
   const handleSignOut = async () => {
     try {
-      // Get the current user's ID before signing out
       const userId = auth.currentUser?.uid;
 
       if (!userId) return;
 
-      // Update user's status in database
       const response = await fetch(`${API_BASE_URL}/api/auth/sign-out`, {
         method: "POST",
         headers: {
@@ -113,13 +111,10 @@ export default function Discovery() {
         throw new Error("Failed to update sign-out status");
       }
 
-      // Sign out from Firebase
       await signOut(auth);
 
-      // Clear local storage
       localStorage.clear();
 
-      // Redirect to login page
       router.push("/login");
     } catch (error) {
       console.error("Error signing out:", error);
@@ -207,24 +202,33 @@ export default function Discovery() {
         )}
 
         <div className={styles.grid}>
-          {profiles.map((profile) => (
-            <div key={profile.firebaseUid} className={styles.card}>
-              <h2 className={styles.cardName}>{profile.name}</h2>
-              <div className={styles.interestsContainer}>
-                {profile.interests.map((interest) => (
-                  <span key={interest} className={styles.interest}>
-                    {interest}
+          {profiles.map((profile) => {
+            console.log(`Rendering ${profile.name} with ${profile.unreadMessages} unread messages`);
+            
+            return (
+              <div key={profile.firebaseUid} className={styles.card}>
+                <h2 className={styles.cardName}>{profile.name}</h2>
+                {(profile.unreadMessages !== undefined && profile.unreadMessages > 0) && (
+                  <span className={`${styles.badge} ${styles.messageBadge}`}>
+                    <i className="fas fa-envelope"></i> New Msg
                   </span>
-                ))}
+                )}
+                <div className={styles.interestsContainer}>
+                  {profile.interests.map((interest) => (
+                    <span key={interest} className={styles.interest}>
+                      {interest}
+                    </span>
+                  ))}
+                </div>
+                <button
+                  onClick={() => router.push(`/profile/${profile.firebaseUid}`)}
+                  className={styles.viewButton}
+                >
+                  View Profile
+                </button>
               </div>
-              <button
-                onClick={() => router.push(`/profile/${profile.firebaseUid}`)}
-                className={styles.viewButton}
-              >
-                View Profile
-              </button>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {profiles.length === 0 && (

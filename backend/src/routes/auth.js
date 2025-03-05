@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const admin = require("../config/firebase-admin");
 const User = require("../models/user");
+const Message = require("../models/message");
 
 router.post("/verify-token", async (req, res) => {
   try {
@@ -157,23 +158,39 @@ router.post("/update-profile", async (req, res) => {
   }
 });
 
-router.get("/users/:user", async (req, res) => {
-  const { user } = req.params;
+router.get("/users/:userId", async (req, res) => {
   try {
-    const users = await User.find(
-      { isOnline: true, firebaseUid: { $ne: user } },
-      {
-        firebaseUid: 1,
-        name: 1,
-        interests: 1,
-        gender: 1,
-        _id: 0,
-      }
-    );
-    return res.status(200).json(users);
+    const { userId } = req.params;
+    
+    const profiles = await User.find({ 
+      firebaseUid: { $ne: userId },
+      isOnline: true 
+    });
+    
+    const profilesWithCounts = await Promise.all(profiles.map(async (profile) => {
+      // Check for messages that either don't have read field or read is false
+      const messages = await Message.find({
+        from: profile.firebaseUid,
+        to: userId,
+        $or: [
+          { read: { $exists: false } },
+          { read: false }
+        ]
+      });
+      
+      console.log('Messages found for', profile.name + ':', messages);
+      const unreadCount = messages.length;
+      
+      return {
+        ...profile.toObject(),
+        unreadMessages: unreadCount
+      };
+    }));
+
+    res.json(profilesWithCounts);
   } catch (error) {
-    console.error("Error fetching users:", error);
-    res.status(500).json({ error: "Server error" });
+    console.error("Error fetching profiles:", error);
+    res.status(500).json({ error: "Failed to fetch profiles" });
   }
 });
 

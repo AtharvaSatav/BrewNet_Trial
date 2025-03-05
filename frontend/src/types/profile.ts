@@ -3,6 +3,7 @@ export interface Profile {
   name: string;
   gender: string;
   interests: string[];
+  unreadMessages?: number;
 }
 
 // Dummy profiles for initial development
