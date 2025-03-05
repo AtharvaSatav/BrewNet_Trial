@@ -155,6 +155,12 @@ export default function Discovery() {
               </span>
             )}
           </button>
+          <button
+            onClick={() => router.push('/about')}
+            className={styles.connectionsButton}
+          >
+            <i className="fas fa-info-circle"></i> About Us
+          </button>
           <div className={styles.profileMenu}>
             <button
               className={styles.profileButton}
