@@ -73,7 +73,13 @@ router.get("/check-user/:uid", async (req, res) => {
 router.post("/complete-onboarding", async (req, res) => {
   try {
     const { firebaseUid, name, gender, interests, bio } = req.body;
-    console.log("Received onboarding data:", { firebaseUid, name, gender, interests, bio });
+    console.log("Received onboarding data:", {
+      firebaseUid,
+      name,
+      gender,
+      interests,
+      bio,
+    });
 
     const updatedUser = await User.findOneAndUpdate(
       { firebaseUid },
@@ -114,7 +120,7 @@ router.get("/user/:firebaseUid", async (req, res) => {
   try {
     const { firebaseUid } = req.params;
     const user = await User.findOne({ firebaseUid });
-    
+
     console.log("Found user:", user);
 
     if (!user) {
@@ -122,12 +128,7 @@ router.get("/user/:firebaseUid", async (req, res) => {
     }
 
     res.json({
-      user: {
-        name: user.name,
-        gender: user.gender,
-        interests: user.interests,
-        bio: user.bio || "",
-      }
+      user,
     });
   } catch (error) {
     console.error("Error fetching user:", error);
@@ -225,7 +226,10 @@ async function exchangeLinkedInCodeForToken(code) {
     redirect: "follow",
   };
 
-  const response = await fetch(process.env.LINKEDIN_ACCESS_TOKEN_URL, requestOptions);
+  const response = await fetch(
+    process.env.LINKEDIN_ACCESS_TOKEN_URL,
+    requestOptions
+  );
   const result = await response.text();
   const res = JSON.parse(result);
   return res.access_token;
@@ -251,13 +255,13 @@ async function retrieveMemberDetails(accessToken) {
 }
 
 // Update the LinkedIn authentication endpoint
-router.post('/linkedin', async (req, res) => {
+router.post("/linkedin", async (req, res) => {
   try {
     const { code } = req.body;
 
     // Exchange code for access token
     const accessToken = await exchangeLinkedInCodeForToken(code);
-    
+
     // Get user profile from LinkedIn
     const profileData = await retrieveMemberDetails(accessToken);
 
@@ -284,8 +288,8 @@ router.post('/linkedin', async (req, res) => {
       needsOnboarding: !user.onboardingCompleted,
     });
   } catch (error) {
-    console.error('LinkedIn auth error:', error);
-    res.status(500).json({ error: 'Authentication failed' });
+    console.error("LinkedIn auth error:", error);
+    res.status(500).json({ error: "Authentication failed" });
   }
 });
 
