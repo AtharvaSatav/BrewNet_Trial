@@ -81,8 +81,8 @@ export default function Discovery() {
     };
 
     fetchUnreadCounts();
-    // Poll more frequently during testing
-    const interval = setInterval(fetchUnreadCounts, 5000); // Changed to 5 seconds
+    // Poll every 30 seconds
+    const interval = setInterval(fetchUnreadCounts, 30000);
     return () => clearInterval(interval);
   }, []);
 

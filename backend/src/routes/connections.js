@@ -236,13 +236,67 @@ router.get("/all/:userId", async (req, res) => {
         name: otherUser.name,
         interests: otherUser.interests || [],
         status: conn.status,
-        initiator: conn.fromUser
+        initiator: conn.fromUser,
+        seen: conn.seen
       };
     }).filter(Boolean); // Remove any null values
 
     res.json({ connections: formattedConnections });
   } catch (error) {
     console.error("Error fetching connections:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+// Add this new route to get unread counts
+router.get("/unread-counts/:userId", async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    // Find all connections with unread status
+    const connections = await Connection.find({
+      $or: [
+        { fromUser: userId, status: 'accepted', seen: false },
+        { toUser: userId, status: 'pending', seen: false }
+      ]
+    });
+
+    // Count unread requests and accepted connections
+    const counts = {
+      newRequests: connections.filter(conn => 
+        conn.toUser === userId && conn.status === 'pending' && !conn.seen
+      ).length,
+      newConnections: connections.filter(conn => 
+        conn.status === 'accepted' && !conn.seen
+      ).length
+    };
+
+    res.json(counts);
+  } catch (error) {
+    console.error("Error fetching unread counts:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+// Add route to mark connections as seen
+router.put("/mark-seen", async (req, res) => {
+  try {
+    const { userId, connectionId } = req.body;
+    
+    // Update specific connection
+    await Connection.findOneAndUpdate(
+      {
+        $or: [
+          { fromUser: userId, toUser: connectionId },
+          { fromUser: connectionId, toUser: userId }
+        ]
+      },
+      { seen: true }
+    );
+
+    res.json({ success: true });
+  } catch (error) {
+    console.error("Error marking connection as seen:", error);
     res.status(500).json({ error: "Server error" });
   }
 });
