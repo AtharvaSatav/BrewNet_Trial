@@ -11,7 +11,7 @@ interface ChatProfile {
   name: string;
   lastMessage?: string;
   lastMessageTime?: string;
-  unreadCount?: number;
+  unreadCount: number;
 }
 
 export default function Chats() {
@@ -28,15 +28,21 @@ export default function Chats() {
           return;
         }
 
-        const response = await fetch(`${API_BASE_URL}/api/connections/all/${user.uid}`);
+        const response = await fetch(`${API_BASE_URL}/api/chat/profiles/${user.uid}`);
         const data = await response.json();
 
-        // Filter only accepted connections
-        const acceptedConnections = data.connections.filter(
-          (connection: any) => connection.status === 'accepted'
-        );
+        // Sort profiles: unread messages first, then by latest message time
+        const sortedProfiles = data.profiles.sort((a: ChatProfile, b: ChatProfile) => {
+          if (a.unreadCount !== b.unreadCount) {
+            return b.unreadCount - a.unreadCount; // Unread messages first
+          }
+          if (a.lastMessageTime && b.lastMessageTime) {
+            return new Date(b.lastMessageTime).getTime() - new Date(a.lastMessageTime).getTime();
+          }
+          return 0;
+        });
 
-        setProfiles(acceptedConnections);
+        setProfiles(sortedProfiles);
       } catch (error) {
         console.error('Error fetching profiles:', error);
       } finally {
@@ -45,6 +51,9 @@ export default function Chats() {
     };
 
     fetchConnectedProfiles();
+    const interval = setInterval(fetchConnectedProfiles, 5000); // Poll every 5 seconds
+
+    return () => clearInterval(interval);
   }, [router]);
 
   if (loading) {
@@ -85,10 +94,20 @@ export default function Chats() {
               <div className={styles.chatInfo}>
                 <h3 className={styles.chatName}>{profile.name}</h3>
                 {profile.lastMessage && (
-                  <p className={styles.lastMessage}>{profile.lastMessage}</p>
+                  <p className={styles.lastMessage}>
+                    {profile.lastMessage}
+                    {profile.lastMessageTime && (
+                      <span className={styles.messageTime}>
+                        {new Date(profile.lastMessageTime).toLocaleTimeString([], { 
+                          hour: '2-digit', 
+                          minute: '2-digit' 
+                        })}
+                      </span>
+                    )}
+                  </p>
                 )}
               </div>
-              {profile.unreadCount && profile.unreadCount > 0 && (
+              {profile.unreadCount > 0 && (
                 <span className={styles.unreadBadge}>{profile.unreadCount}</span>
               )}
             </div>

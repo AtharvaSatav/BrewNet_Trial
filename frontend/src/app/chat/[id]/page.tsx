@@ -307,6 +307,25 @@ export default function ChatRoom() {
     }
   };
 
+  useEffect(() => {
+    const markMessagesAsRead = async () => {
+      const currentUser = auth.currentUser;
+      if (!currentUser) return;
+      
+      try {
+        await fetch(`${API_BASE_URL}/api/chat/read/${params.id}/${currentUser.uid}`, {
+          method: 'PUT'
+        });
+      } catch (error) {
+        console.error('Error marking messages as read:', error);
+      }
+    };
+
+    if (params.id && auth.currentUser) {
+      markMessagesAsRead();
+    }
+  }, [params.id, auth.currentUser]);
+
   if (loading) {
     return (
       <div className={styles.container}>

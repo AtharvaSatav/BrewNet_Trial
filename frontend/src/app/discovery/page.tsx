@@ -17,6 +17,7 @@ export default function Discovery() {
   const [showMenu, setShowMenu] = useState(false);
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [unreadCounts, setUnreadCounts] = useState({ newRequests: 0, newConnections: 0 });
+  const [unreadChats, setUnreadChats] = useState(0);
 
   useEffect(() => {
     let pollingInterval: NodeJS.Timeout;
@@ -83,6 +84,26 @@ export default function Discovery() {
 
     fetchUnreadCounts();
     const interval = setInterval(fetchUnreadCounts, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const fetchUnreadCounts = async () => {
+      try {
+        const user = auth.currentUser;
+        if (!user) return;
+
+        const response = await fetch(`${API_BASE_URL}/api/chat/unread/${user.uid}`);
+        const data = await response.json();
+        setUnreadChats(data.unreadCount);
+      } catch (error) {
+        console.error('Error fetching unread chats:', error);
+      }
+    };
+
+    fetchUnreadCounts();
+    const interval = setInterval(fetchUnreadCounts, 10000);
+
     return () => clearInterval(interval);
   }, []);
 
@@ -166,6 +187,9 @@ export default function Discovery() {
             onClick={() => router.push('/chats')}
           >
             <i className="fas fa-comments"></i> Chats
+            {unreadChats > 0 && (
+              <span className={styles.badge}>{unreadChats}</span>
+            )}
           </button>
           <div className={styles.profileMenu}>
             <button
