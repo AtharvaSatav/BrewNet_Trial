@@ -14,14 +14,22 @@ interface OnboardingData {
 }
 
 const INTERESTS = [
-  "Business",
   "Startups",
+  "Edtech Startups",
+  "Fintech Startups",
   "AI",
   "Networking",
   "Creative Work",
-  "Love",
-  "Friends",
   "Consultancy",
+  "Technology & Innovation",
+  "Trading",
+  "Real Estate",
+  "Healthcare",
+  "Energy & Sustainability",
+  "Web3",
+  "Product & Market",
+  "E-commerce",
+  "Marketing",
 ];
 
 export default function OnboardingPage() {
@@ -183,7 +191,7 @@ function OnboardingContent() {
           <div className={styles.formGroup}>
             <h2 className={styles.title}>Select your gender</h2>
             <div className={styles.genderGrid}>
-              {["male", "female", "other"].map((gender) => (
+              {["male", "female", "Prefer not to say"].map((gender) => (
                 <button
                   key={gender}
                   className={`${styles.genderButton} ${
