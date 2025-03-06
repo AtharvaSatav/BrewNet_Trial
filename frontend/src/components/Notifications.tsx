@@ -74,6 +74,21 @@ export default function Notifications() {
     }
   };
 
+  const handleClose = async (e: React.MouseEvent, notificationId: string) => {
+    e.stopPropagation(); // Prevent notification click when clicking close button
+    try {
+      await fetch(`${API_BASE_URL}/api/notifications/${notificationId}/read`, {
+        method: "PUT",
+      });
+
+      setNotifications((prev) =>
+        prev.filter((n) => n._id !== notificationId)
+      );
+    } catch (error) {
+      console.error("Error closing notification:", error);
+    }
+  };
+
   // Only render if we have notifications
   if (notifications.length === 0) return null;
 
@@ -85,6 +100,13 @@ export default function Notifications() {
           className={styles.notification}
           onClick={() => handleNotificationClick(notification)}
         >
+          <button 
+            className={styles.closeButton}
+            onClick={(e) => handleClose(e, notification._id)}
+          >
+            ×
+          </button>
+          
           {notification.type === "connection_request" && (
             <div className={styles.notificationContent}>
               <div className={styles.notificationTitle}>
