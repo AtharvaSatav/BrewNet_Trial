@@ -117,7 +117,7 @@ export default function LandingPage() {
                   </button>
 
                   <button 
-                    className={`${styles.btn} ${styles.primary}`}
+                    className={`${styles.btn1} ${styles.primary}`}
                     onClick={() => setShowEmailForm(true)}
                   >
                     Sign in with Email
@@ -174,7 +174,7 @@ export default function LandingPage() {
       </section>
 
       {/* Benefits Section */}
-      <section className={styles.benefits}>
+      <section className={styles.benefits} id="how-it-works">
         <div className={styles.container}>
           <h2>Why Use BrewNet?</h2>
           <div className={styles.benefitsGrid}>
@@ -195,7 +195,7 @@ export default function LandingPage() {
       </section>
 
       {/* How It Works Section */}
-      <section className={styles.howItWorks} id="how-it-works">
+      <section className={styles.howItWorks}>
         <div className={styles.container}>
           <h2>How It Works</h2>
           <div className={styles.stepsContainer}>
@@ -246,7 +246,7 @@ export default function LandingPage() {
             <div className={styles.trendMessage}>
               <p className={styles.trendQuote}>"The biggest ideas in the West started in coffee shops. Let's make Indian cafés the next hub for networking!"</p>
               <button 
-                className={`${styles.btn} ${styles.primary} ${styles.trendCta}`} 
+                className={`${styles.btn2} ${styles.secondary} ${styles.trendCta}`} 
                 onClick={() => router.push('/login')}
               >
                 Be the first to experience the change!
@@ -275,7 +275,7 @@ export default function LandingPage() {
                 </button>
 
                 <button 
-                  className={`${styles.btn} ${styles.primary}`}
+                  className={`${styles.btn1} ${styles.primary}`}
                   onClick={() => setShowEmailForm(true)}
                 >
                   Sign in with Email

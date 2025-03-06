@@ -45,77 +45,58 @@ export default function ProfilePage() {
   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>({
     status: "none",
   });
+  const [connectionInitiator, setConnectionInitiator] = useState<string | null>(null);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [toastType, setToastType] = useState<"info" | "success">("info");
   const [error, setError] = useState<string | null>(null);
 
+  // Function to fetch connection status
+  const fetchConnectionStatus = async (currentUserId: string) => {
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/api/connections/status/${currentUserId}/${params.id}`
+      );
+      const data = await response.json();
+      setConnectionStatus(data);
+      setConnectionInitiator(data.initiator || null);
+    } catch (error) {
+      console.error('Error fetching connection status:', error);
+    }
+  };
+
   useEffect(() => {
-    const fetchProfile = async () => {
+    const fetchData = async () => {
       try {
-        console.log("Fetching profile for:", params.id);
-        const response = await fetch(`${API_BASE_URL}/api/auth/user/${params.id}`);
-        const data = await response.json();
-        console.log("Received profile data:", data);
-        if (response.ok) {
-          setProfile(data.user);
+        const user = auth.currentUser;
+        if (!user) {
+          router.push('/login');
+          return;
         }
+
+        // Fetch profile data
+        const response = await fetch(`${API_BASE_URL}/api/auth/user/${params.id}`);
+        if (!response.ok) throw new Error('Failed to fetch profile');
+        const data = await response.json();
+        setProfile(data.user);
+
+        // Initial connection status fetch
+        await fetchConnectionStatus(user.uid);
+        
+        // Set up polling for connection status
+        const intervalId = setInterval(() => {
+          fetchConnectionStatus(user.uid);
+        }, 2000); // Poll every 2 seconds
+
+        return () => clearInterval(intervalId);
       } catch (error) {
-        console.error("Error fetching profile:", error);
+        console.error('Error:', error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchProfile();
-  }, [params.id]);
-
-  useEffect(() => {
-    const fetchProfileAndConnection = async () => {
-      try {
-        const currentUser = auth.currentUser;
-        if (!currentUser) {
-          router.push("/login");
-          return;
-        }
-
-        // Check if backend is available
-        try {
-          const healthCheck = await fetch(`${API_BASE_URL}/api/health`);
-          if (!healthCheck.ok) {
-            throw new Error("Backend server not available");
-          }
-        } catch (error) {
-          console.error("Backend health check failed:", error);
-          setError("Server connection failed. Please try again later.");
-          setLoading(false);
-          return;
-        }
-
-        // Fetch connection status
-        const connectionResponse = await fetch(
-          `${API_BASE_URL}/api/connections/status/${currentUser.uid}/${params.id}`
-        );
-        if (!connectionResponse.ok) {
-          throw new Error(
-            `Failed to fetch connection status: ${connectionResponse.statusText}`
-          );
-        }
-        const connectionData = await connectionResponse.json();
-        setConnectionStatus(connectionData);
-      } catch (error) {
-        console.error("Data fetching error:", error);
-        setError(
-          error instanceof Error
-            ? error.message
-            : "An unexpected error occurred"
-        );
-      }
-
-      setLoading(false);
-    };
-
-    fetchProfileAndConnection();
+    fetchData();
   }, [params.id, router]);
 
   const handleConnect = async () => {
