@@ -1,0 +1,124 @@
+.container {
+  min-height: 100vh;
+  background-image: url("/cafe-background.jpg");
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 0;
+}
+
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  z-index: 10;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.backButton {
+  background: transparent;
+  border: none;
+  color: #8B4513;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #8B4513;
+}
+
+.chatList {
+  position: relative;
+  z-index: 1;
+  padding: 5rem 1rem 1rem;
+  max-width: 768px;
+  margin: 0 auto;
+}
+
+.chatItem {
+  background-color: rgba(255, 255, 255, 0.95);
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: transform 0.2s;
+}
+
+.chatItem:hover {
+  transform: translateY(-2px);
+}
+
+.chatInfo {
+  flex: 1;
+}
+
+.chatName {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.25rem;
+}
+
+.lastMessage {
+  color: #666;
+  font-size: 0.875rem;
+}
+
+.unreadBadge {
+  background-color: #2563eb;
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+}
+
+.emptyState {
+  text-align: center;
+  color: white;
+  padding: 2rem;
+}
+
+.discoverButton {
+  margin-top: 1rem;
+  padding: 0.75rem 1.5rem;
+  background-color: #8B4513;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.discoverButton:hover {
+  background-color: #6B3410;
+}
+
+.loading {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.25rem;
+} 

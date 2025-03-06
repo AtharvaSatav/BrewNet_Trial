@@ -14,8 +14,8 @@
 
 /* Hero Section */
 .hero {
-  min-height: 100vh;
-  padding: 6rem 2rem;
+  min-height: 70vh;
+  padding: 4rem 2rem;
   background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
               url('/images/an_ambient_cafe.jpg');
   background-size: cover;
@@ -397,6 +397,11 @@
 
 /* Responsive Design */
 @media (max-width: 768px) {
+  .hero {
+    min-height: 65vh;
+    padding: 3rem 1rem;
+  }
+
   .hero h1 {
     font-size: 2.5rem;
   }

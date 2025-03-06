@@ -137,7 +137,18 @@ export default function Discovery() {
     <div className={styles.container}>
       <div className={styles.overlay} />
       <header className={styles.header}>
-        <div className={styles.brandName}>BrewNet</div>
+        {/* For mobile, this will be top row */}
+        <div className={styles.topBar}>
+          <div className={styles.brandName}>BrewNet</div>
+          <button
+            onClick={() => router.push('/about')}
+            className={styles.connectionsButton}
+          >
+            <i className="fas fa-info-circle"></i> About Us
+          </button>
+        </div>
+
+        {/* For mobile, this will move to bottom */}
         <div className={styles.headerButtons}>
           <button
             className={styles.connectionsButton}
@@ -151,15 +162,15 @@ export default function Discovery() {
             )}
           </button>
           <button
-            onClick={() => router.push('/about')}
             className={styles.connectionsButton}
+            onClick={() => router.push('/chats')}
           >
-            <i className="fas fa-info-circle"></i> About Us
+            <i className="fas fa-comments"></i> Chats
           </button>
           <div className={styles.profileMenu}>
             <button
-              className={styles.profileButton}
               onClick={() => setShowMenu(!showMenu)}
+              className={styles.profileButton}
             >
               My Profile
             </button>
