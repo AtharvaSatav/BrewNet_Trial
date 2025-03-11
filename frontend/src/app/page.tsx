@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { auth } from '@/lib/firebase';
-import { signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword } from 'firebase/auth';
+import { signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, fetchSignInMethodsForEmail } from 'firebase/auth';
 import styles from './landing.module.css';
 import { API_BASE_URL } from '@/config/constants';
 
@@ -13,7 +13,7 @@ export default function LandingPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showEmailForm, setShowEmailForm] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState<string | null>(null);
 
   const handleGoogleSignIn = async () => {
     if (loading) return;
@@ -49,19 +49,54 @@ export default function LandingPage() {
     }
   };
 
-  const handleEmailSignIn = async (e: React.FormEvent) => {
+  const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (loading) return;
+    setLoading(true);
+    setError(null);
 
     try {
-      setLoading(true);
-      setError('');
+      // First check the sign-in methods for this email
+      const methods = await fetchSignInMethodsForEmail(auth, email);
+      
+      // If email is registered with Google
+      if (methods.includes('google.com')) {
+        setError('This email is registered with Google. Please use "Sign in with Google" instead.');
+        setLoading(false);
+        return;
+      }
 
-      const result = await signInWithEmailAndPassword(auth, email, password);
-      await handleAuthSuccess(result.user);
+      // Try to sign in first regardless of whether email exists
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        router.push('/discovery');
+        return;
+      } catch (signInError: any) {
+        // If user doesn't exist, create new account
+        if (signInError.code === 'auth/user-not-found') {
+          try {
+            await createUserWithEmailAndPassword(auth, email, password);
+            router.push('/onboarding');
+            return;
+          } catch (signUpError: any) {
+            switch (signUpError.code) {
+              case 'auth/weak-password':
+                setError('Password should be at least 6 characters');
+                break;
+              case 'auth/invalid-email':
+                setError('Please enter a valid email address');
+                break;
+              default:
+                setError(signUpError.message);
+            }
+          }
+        } else if (signInError.code === 'auth/wrong-password') {
+          setError('Incorrect password. Please try again.');
+        } else {
+          setError(signInError.message);
+        }
+      }
     } catch (error: any) {
-      console.error('Auth error:', error);
-      setError(error.message || 'Failed to sign in');
+      setError(error.message);
     } finally {
       setLoading(false);
     }
@@ -117,7 +152,7 @@ export default function LandingPage() {
                   </button>
 
                   <button 
-                    className={`${styles.btn1} ${styles.primary}`}
+                    className={`${styles.btn} ${styles.primary}`}
                     onClick={() => setShowEmailForm(true)}
                   >
                     Sign in with Email
@@ -132,41 +167,38 @@ export default function LandingPage() {
                 </button>
               </div>
             ) : (
-              <form onSubmit={handleEmailSignIn} className={styles.emailForm}>
-                {error && <p className={styles.error}>{error}</p>}
+              <form onSubmit={handleEmailSubmit} className={styles.emailForm}>
                 <input
                   type="email"
-                  placeholder="Email"
+                  placeholder="Enter your email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  className={styles.input}
                   required
                 />
                 <input
                   type="password"
-                  placeholder="Password"
+                  placeholder="Enter your password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  className={styles.input}
                   required
                 />
-                <div className={styles.formButtons}>
-                  <button 
-                    type="submit" 
-                    className={`${styles.btn} ${styles.primary}`}
-                    disabled={loading}
-                  >
-                    {loading ? 'Signing in...' : 'Sign in'}
-                  </button>
-                  <button 
-                    type="button"
-                    className={`${styles.btn} ${styles.secondary}`}
-                    onClick={() => {
-                      setShowEmailForm(false);
-                      setError('');
-                    }}
-                  >
-                    Back
-                  </button>
-                </div>
+                {error && <div className={styles.error}>{error}</div>}
+                <button 
+                  type="submit" 
+                  className={`${styles.btn} ${styles.primary}`}
+                  disabled={loading}
+                >
+                  {loading ? 'Processing...' : 'Continue'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowEmailForm(false)}
+                  className={`${styles.btn} ${styles.secondary}`}
+                >
+                  Back
+                </button>
               </form>
             )}
           </div>
@@ -275,7 +307,7 @@ export default function LandingPage() {
                 </button>
 
                 <button 
-                  className={`${styles.btn1} ${styles.primary}`}
+                  className={`${styles.btn} ${styles.primary}`}
                   onClick={() => setShowEmailForm(true)}
                 >
                   Sign in with Email
@@ -284,41 +316,38 @@ export default function LandingPage() {
               
             </div>
           ) : (
-            <form onSubmit={handleEmailSignIn} className={styles.emailForm}>
-              {error && <p className={styles.error}>{error}</p>}
+            <form onSubmit={handleEmailSubmit} className={styles.emailForm}>
               <input
                 type="email"
-                placeholder="Email"
+                placeholder="Enter your email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                className={styles.input}
                 required
               />
               <input
                 type="password"
-                placeholder="Password"
+                placeholder="Enter your password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                className={styles.input}
                 required
               />
-              <div className={styles.formButtons}>
-                <button 
-                  type="submit" 
-                  className={`${styles.btn} ${styles.primary}`}
-                  disabled={loading}
-                >
-                  {loading ? 'Signing in...' : 'Sign in'}
-                </button>
-                <button 
-                  type="button"
-                  className={`${styles.btn} ${styles.secondary}`}
-                  onClick={() => {
-                    setShowEmailForm(false);
-                    setError('');
-                  }}
-                >
-                  Back
-                </button>
-              </div>
+              {error && <div className={styles.error}>{error}</div>}
+              <button 
+                type="submit" 
+                className={`${styles.btn} ${styles.primary}`}
+                disabled={loading}
+              >
+                {loading ? 'Processing...' : 'Continue'}
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowEmailForm(false)}
+                className={`${styles.btn} ${styles.secondary}`}
+              >
+                Back
+              </button>
             </form>
           )}
         </div>
