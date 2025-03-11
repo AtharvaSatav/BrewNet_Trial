@@ -53,8 +53,8 @@ const storeMessages = (chatId: string, messages: Message[]) => {
 const QUICK_MESSAGES = [
   "Which table are you at?",
   "Can we meet in person?",
-  "Would you like to get coffee together?",
-  "Are you currently at the cafe?",
+  "Wow! Our Interests align!",
+  "Are you currently at the event?",
 ];
 
 export default function ChatRoom() {

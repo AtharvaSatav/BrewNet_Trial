@@ -8,28 +8,25 @@ import { API_BASE_URL } from '@/config/constants';
 
 interface OnboardingData {
   name: string;
-  gender: "male" | "female" | "Prefer not to say" | "";
+  //gender: "male" | "female" | "Prefer not to say" | "";
   interests: string[];
   bio?: string;
 }
 
 const INTERESTS = [
   "Startups",
-  "Edtech Startups",
-  "Fintech Startups",
+  "Consultancy",
   "AI",
   "Networking",
+  "Sales & Marketing",
   "Creative Work",
-  "Consultancy",
   "Technology & Innovation",
-  "Trading",
-  "Real Estate",
-  "Healthcare",
-  "Energy & Sustainability",
   "Web3",
   "Product & Market",
-  "E-commerce",
-  "Marketing",
+  "Trading",
+  "Lawyer",
+  "Business Advisor",
+  "HR",
 ];
 
 export default function OnboardingPage() {
@@ -48,7 +45,7 @@ function OnboardingContent() {
   const [step, setStep] = useState(1);
   const [data, setData] = useState<OnboardingData>({
     name: "",
-    gender: "",
+    //gender: "",
     interests: [],
     bio: "",
   });
@@ -70,7 +67,7 @@ function OnboardingContent() {
             const profile = await response.json();
             setData({
               name: profile.name || "",
-              gender: profile.gender || "",
+              //gender: profile.gender || "",
               interests: profile.interests || [],
               bio: profile.bio || "",
             });
@@ -89,9 +86,9 @@ function OnboardingContent() {
   const handleNext = async () => {
     const isStepValid = () => {
       if (step === 1) return data.name.trim().length > 0;
-      if (step === 2) return data.gender !== "";
-      if (step === 3) return data.interests.length > 0;
-      if (step === 4) return true;  // Bio is optional, so always valid
+      //if (step === 2) return data.gender !== "";
+      if (step === 2) return data.interests.length > 0;
+      if (step === 3) return true;  // Bio is optional, so always valid
       return false;
     };
 
@@ -99,7 +96,7 @@ function OnboardingContent() {
       return;
     }
 
-    if (step === 4) {
+    if (step === 3) {
       try {
         const user = auth.currentUser;
         if (!user) {
@@ -162,7 +159,7 @@ function OnboardingContent() {
         </div>
 
         <div className={styles.progressBar}>
-          {[1, 2, 3, 4].map((i) => (
+          {[1, 2, 3].map((i) => (
             <div
               key={i}
               className={`${styles.progressStep} ${
@@ -172,7 +169,7 @@ function OnboardingContent() {
           ))}
         </div>
 
-        <div className={styles.stepCounter}>Step {step} of 4</div>
+        <div className={styles.stepCounter}>Step {step} of 3</div>
 
         {step === 1 && (
           <div className={styles.formGroup}>
@@ -187,7 +184,7 @@ function OnboardingContent() {
           </div>
         )}
 
-        {step === 2 && (
+        {/* {step === 2 && (
           <div className={styles.formGroup}>
             <h2 className={styles.title}>Select your gender</h2>
             <div className={styles.genderGrid}>
@@ -209,9 +206,9 @@ function OnboardingContent() {
               ))}
             </div>
           </div>
-        )}
+        )} */}
 
-        {step === 3 && (
+        {step === 2 && (
           <div className={styles.formGroup}>
             <h2 className={styles.title}>Select your interests</h2>
             <div className={styles.interestsContainer}>
@@ -232,7 +229,7 @@ function OnboardingContent() {
           </div>
         )}
 
-        {step === 4 && (
+        {step === 3 && (
           <div className={styles.formGroup}>
             <h2 className={styles.title}>Tell us a little about yourself! Just a sentence or two (optional)</h2>
             <textarea
@@ -252,7 +249,7 @@ function OnboardingContent() {
             </button>
           )}
           <button onClick={handleNext} className={styles.nextButton}>
-            {step === 4 ? "Finish" : "Next"} →
+            {step === 3 ? "Finish" : "Next"} →
           </button>
         </div>
       </div>

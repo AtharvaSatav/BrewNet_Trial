@@ -10,7 +10,7 @@ import styles from "@/app/profile/edit/page.module.css";
 
 interface ProfileData {
   name: string;
-  gender: string;
+  //gender: string;
   interests: string[];
   bio?: string;
 }
@@ -22,7 +22,7 @@ export default function EditProfile() {
   const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState<ProfileData>({
     name: "",
-    gender: "",
+    //gender: "",
     interests: [],
     bio: "",
   });
@@ -42,9 +42,10 @@ export default function EditProfile() {
         const data = await response.json();
         setFormData({
           name: data.user.name,
-          gender: data.user.gender,
+          //gender: data.user.gender,
           interests: data.user.interests,
-          bio: data.user.bio || "",
+          //bio: data.user.bio || "",
+          bio: data.user.bio,
         });
       } catch (err) {
         setError("Failed to load profile");
@@ -148,7 +149,7 @@ export default function EditProfile() {
               />
             </div>
 
-            <div>
+            {/* <div>
               <label
                 htmlFor="gender"
                 className="block text-sm font-medium text-brown-700"
@@ -169,7 +170,7 @@ export default function EditProfile() {
                 <option value="Female">Female</option>
                 <option value="Prefer not to say">Prefer not to say</option>
               </select>
-            </div>
+            </div> */}
 
             <div>
               <label className="block text-sm font-medium text-brown-700 mb-2">
@@ -200,7 +201,8 @@ export default function EditProfile() {
               <textarea
                 value={formData.bio}
                 onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
-                placeholder="Write a brief introduction..."
+                //placeholder="Write a brief introduction..."
+                placeholder={formData.bio}
                 className={styles.textarea}
                 rows={3}
               />
