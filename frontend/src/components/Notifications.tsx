@@ -26,17 +26,26 @@ export default function Notifications() {
 
     const fetchNotifications = async () => {
       try {
-        const user = auth.currentUser;
-        if (!user) return;
+        const response = await fetch(
+          `${API_BASE_URL}/api/notifications/${auth.currentUser?.uid}`,
+          {
+            credentials: 'include',
+            headers: {
+              'Authorization': `Bearer ${await auth.currentUser?.getIdToken()}`,
+            }
+          }
+        );
 
-        const response = await fetch(`${API_BASE_URL}/api/notifications/${user.uid}`);
-
-        if (response.ok) {
-          const data = await response.json();
-          setNotifications(data.notifications);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
+
+        const data = await response.json();
+        setNotifications(data.notifications);
       } catch (error) {
-        console.error("Error fetching notifications:", error);
+        console.error('Error fetching notifications:', error);
+        // Add retry logic
+        setTimeout(fetchNotifications, 5000); // Retry after 5 seconds
       }
     };
 
