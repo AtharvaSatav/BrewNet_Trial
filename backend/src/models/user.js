@@ -1,47 +1,52 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
   firebaseUid: {
     type: String,
     required: true,
-    unique: true
+    unique: true,
   },
   email: {
     type: String,
     required: true,
-    unique: true
+    unique: true,
   },
   name: {
     type: String,
     required: true,
-    default: 'New User'
+    default: "New User",
   },
   photoURL: String,
   gender: {
     type: String,
-    enum: ['male', 'female', 'other'],
-    default: 'other'
+    enum: ["male", "female", "other"],
+    default: "other",
   },
-  interests: [{
+  interests: [
+    {
+      type: String,
+      default: [],
+    },
+  ],
+  bio: {
     type: String,
-    default: []
-  }],
-  bio: String,
+    default: "Hey there! I am using BrewNet!",
+  },
   onboardingCompleted: {
     type: Boolean,
-    default: false
+    default: false,
   },
   createdAt: {
     type: Date,
-    default: Date.now
+    default: Date.now,
   },
   isOnline: {
     type: Boolean,
-    default: false
+    default: false,
   },
   lastSignOut: {
-    type: Date
-  }
+    type: Date,
+  },
 });
 
-module.exports = mongoose.model('User', userSchema); 
+module.exports = mongoose.model("User", userSchema);
