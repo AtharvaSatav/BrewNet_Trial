@@ -3,6 +3,7 @@ const router = express.Router();
 const admin = require("../config/firebase-admin");
 const User = require("../models/user");
 const Message = require("../models/message");
+const user = require("../models/user");
 
 router.post("/verify-token", async (req, res) => {
   try {
@@ -21,6 +22,7 @@ router.post("/verify-token", async (req, res) => {
         photoURL: decodedToken.picture,
         gender: "other",
         interests: [],
+        bio: "",
         onboardingCompleted: false,
       });
 
@@ -64,6 +66,7 @@ router.get("/check-user/:uid", async (req, res) => {
       name: user.name,
       gender: user.gender,
       interests: user.interests,
+      bio: user.bio,
     });
   } catch (error) {
     console.error("Error checking user:", error);
@@ -91,6 +94,7 @@ router.post("/complete-onboarding", async (req, res) => {
           interests,
           bio,
           onboardingCompleted: true,
+          isOnline: true,
         },
       },
       { new: true }
@@ -107,7 +111,7 @@ router.post("/complete-onboarding", async (req, res) => {
         name: updatedUser.name,
         gender: updatedUser.gender,
         interests: updatedUser.interests,
-        bio: updatedUser.bio || "",
+        bio: updatedUser.bio || user.bio,
       },
       needsOnboarding: false,
     });
