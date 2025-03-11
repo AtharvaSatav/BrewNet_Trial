@@ -316,13 +316,13 @@ export default function LandingPage() {
               
             </div>
           ) : (
-            <form onSubmit={handleEmailSubmit} className={styles.emailForm}>
+            <form onSubmit={handleEmailSubmit} className={styles.emailForm1}>
               <input
                 type="email"
                 placeholder="Enter your email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className={styles.input}
+                className={styles.input1}
                 required
               />
               <input
@@ -330,7 +330,7 @@ export default function LandingPage() {
                 placeholder="Enter your password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className={styles.input}
+                className={styles.input1}
                 required
               />
               {error && <div className={styles.error}>{error}</div>}
