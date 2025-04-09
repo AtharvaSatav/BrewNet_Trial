@@ -119,6 +119,7 @@ export default function LandingPage() {
     if (data.needsOnboarding) {
       router.push('/onboarding');
     } else {
+      localStorage.setItem('showIntent', 'true');
       router.push('/discovery');
     }
   };
@@ -128,6 +129,11 @@ export default function LandingPage() {
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
     }
+  };
+
+  const handleGetStarted = () => {
+    localStorage.setItem('showIntent', 'true');
+    router.push('/discovery');
   };
 
   return (

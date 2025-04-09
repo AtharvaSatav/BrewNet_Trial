@@ -10,6 +10,7 @@ interface UserProfile {
   name: string;
   gender: string;
   interests: string[];
+  intent: string;
 }
 
 export default function Profile() {
@@ -35,6 +36,7 @@ export default function Profile() {
           name: data.user.name,
           gender: data.user.gender,
           interests: data.user.interests,
+          intent: data.user.intent,
         });
       } catch (err) {
         setError("Failed to load profile");
@@ -93,6 +95,13 @@ export default function Profile() {
             <div>
               <h2 className="text-sm font-medium text-brown-700">Gender</h2>
               <p className="mt-1 text-lg text-brown-900">{profile.gender}</p>
+            </div>
+
+            <div>
+              <h2 className="text-sm font-medium text-brown-700">Currently Looking For</h2>
+              <p className="mt-1 text-lg text-brown-900 italic">
+                "{profile.intent || "No intent set"}"
+              </p>
             </div>
 
             <div>

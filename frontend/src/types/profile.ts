@@ -4,6 +4,7 @@ export interface Profile {
   gender: string;
   interests: string[];
   unreadMessages?: number;
+  intent?: string;
 }
 
 // Dummy profiles for initial development

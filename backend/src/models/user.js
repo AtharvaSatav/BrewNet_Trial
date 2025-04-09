@@ -47,6 +47,14 @@ const userSchema = new mongoose.Schema({
   lastSignOut: {
     type: Date,
   },
+  intent: {
+    type: String,
+    default: "",
+  },
+  intentUpdatedAt: {
+    type: Date,
+    default: null,
+  },
 });
 
 module.exports = mongoose.model("User", userSchema);

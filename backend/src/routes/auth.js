@@ -24,11 +24,14 @@ router.post("/verify-token", async (req, res) => {
         interests: [],
         bio: "",
         onboardingCompleted: false,
+        intent: "",
+        intentUpdatedAt: null
       });
 
       return res.json({
         user,
         needsOnboarding: true,
+        needsIntent: true
       });
     }
 
@@ -42,6 +45,7 @@ router.post("/verify-token", async (req, res) => {
     res.json({
       user,
       needsOnboarding: !user.onboardingCompleted,
+      needsIntent: true // Always true to prompt for intent on every sign in
     });
   } catch (error) {
     console.error("Auth error:", error);
@@ -311,6 +315,68 @@ router.post("/linkedin", async (req, res) => {
   } catch (error) {
     console.error("LinkedIn auth error:", error);
     res.status(500).json({ error: "Authentication failed" });
+  }
+});
+
+// Check if user needs to update intent
+router.get('/check-intent', async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split('Bearer ')[1];
+
+    if (!token) {
+      return res.status(401).json({ error: 'No token provided' });
+    }
+
+    const decodedToken = await admin.auth().verifyIdToken(token);
+    const user = await User.findOne({ firebaseUid: decodedToken.uid });
+    
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.json({ needsIntent: true });
+  } catch (error) {
+    console.error('Error checking intent:', error);
+    if (error.code === 'auth/argument-error') {
+      return res.status(401).json({ error: 'Invalid token' });
+    }
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// Update user's intent
+router.post('/update-intent', async (req, res) => {
+  try {
+    const { intent } = req.body;
+    const token = req.headers.authorization?.split('Bearer ')[1];
+
+    if (!token) {
+      return res.status(401).json({ error: 'No token provided' });
+    }
+
+    // Verify the Firebase token
+    const decodedToken = await admin.auth().verifyIdToken(token);
+    
+    const user = await User.findOneAndUpdate(
+      { firebaseUid: decodedToken.uid },
+      { 
+        intent,
+        intentUpdatedAt: new Date()
+      },
+      { new: true }
+    );
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Error updating intent:', error);
+    if (error.code === 'auth/argument-error') {
+      return res.status(401).json({ error: 'Invalid token' });
+    }
+    res.status(500).json({ error: 'Server error' });
   }
 });
 

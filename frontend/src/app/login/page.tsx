@@ -52,6 +52,7 @@ export default function Login() {
       if (data.needsOnboarding) {
         router.push('/onboarding');
       } else {
+        sessionStorage.setItem('isNewLogin', 'true');
         router.push('/discovery');
       }
     } catch (error) {
@@ -65,32 +66,28 @@ export default function Login() {
   const handleGoogleSignIn = async () => {
     try {
       setLoading(true);
-      setError('');
-      const provider = new GoogleAuthProvider();
-      const result = await signInWithPopup(auth, provider);
+      const result = await signInWithPopup(auth, new GoogleAuthProvider());
+      const token = await result.user.getIdToken();
       
-      // Get ID token
-      const idToken = await result.user.getIdToken();
-
-      // Verify token with backend
       const response = await fetch(`${API_BASE_URL}/api/auth/verify-token`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ token: idToken }),
+        body: JSON.stringify({ token })
       });
 
       const data = await response.json();
-
+      
       if (data.needsOnboarding) {
         router.push('/onboarding');
       } else {
+        localStorage.setItem('showIntent', 'true');
         router.push('/discovery');
       }
     } catch (error) {
-      console.error('Login error:', error);
-      setError('Failed to sign in. Please try again.');
+      console.error('Error signing in:', error);
+      setError('Failed to sign in with Google');
     } finally {
       setLoading(false);
     }

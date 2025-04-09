@@ -1,0 +1,230 @@
+.nav {
+  background-color: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 2px 15px rgba(139, 69, 19, 0.08);
+  position: relative;
+  z-index: 50;
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 40;
+  animation: fadeIn 0.2s ease;
+}
+
+.container {
+  max-width: 6xl;
+  margin: 0 auto;
+  padding: 0.75rem 1.25rem;
+}
+
+.content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.brand {
+  font-size: clamp(1.25rem, 3vw, 1.5rem);
+  font-weight: bold;
+  color: #8B4513;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.brand:hover {
+  transform: translateY(-1px);
+  color: #6B3410;
+}
+
+.profileSection {
+  position: relative;
+}
+
+.profileButton {
+  padding: 0.75rem 1.25rem;
+  background-color: #8B4513;
+  color: white;
+  border: none;
+  border-radius: 0.75rem;
+  font-size: clamp(0.875rem, 2.5vw, 1rem);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  letter-spacing: 0.02em;
+}
+
+.profileButton:hover {
+  background-color: #6B3410;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(139, 69, 19, 0.25);
+}
+
+.profileButton i {
+  font-size: 0.875rem;
+  transition: transform 0.3s ease;
+}
+
+.profileButton[aria-expanded="true"] i {
+  transform: rotate(180deg);
+}
+
+.dropdown {
+  position: absolute;
+  top: calc(100% + 0.75rem);
+  right: 0;
+  min-width: 280px;
+  background-color: white;
+  border-radius: 1rem;
+  box-shadow: 
+    0 4px 20px rgba(0, 0, 0, 0.1),
+    0 0 0 1px rgba(139, 69, 19, 0.08);
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(-8px) scale(0.98);
+  visibility: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 50;
+}
+
+.dropdownOpen {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  visibility: visible;
+}
+
+.dropdownHeader {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid #F3E7E0;
+  color: #666;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.dropdownItem {
+  padding: 1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: #333;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  position: relative;
+  background: transparent;
+}
+
+.dropdownItemContent {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.dropdownItemContent span:first-child {
+  font-weight: 500;
+  font-size: clamp(0.875rem, 2.5vw, 1rem);
+}
+
+.dropdownItemDescription {
+  font-size: 0.813rem;
+  color: #666;
+}
+
+.dropdownItem i {
+  font-size: 1.125rem;
+  color: #8B4513;
+  opacity: 0.9;
+  transition: transform 0.2s ease;
+}
+
+.dropdownItem:hover {
+  background-color: #FDF8F6;
+}
+
+.dropdownItem:hover i {
+  transform: translateX(2px);
+}
+
+.signOutItem {
+  border-top: 1px solid #F3E7E0;
+}
+
+.signOutItem i {
+  color: #DC2626;
+}
+
+.signOutItem .dropdownItemContent span:first-child {
+  color: #DC2626;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 640px) {
+  .container {
+    padding: 0.625rem 1rem;
+  }
+
+  .profileButton {
+    padding: 0.625rem 1rem;
+  }
+
+  .dropdown {
+    position: fixed;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    min-width: 100%;
+    border-radius: 1.25rem 1.25rem 0 0;
+    transform: translateY(100%);
+    max-height: 85vh;
+    overflow-y: auto;
+  }
+
+  .dropdownOpen {
+    transform: translateY(0);
+  }
+
+  .dropdownHeader {
+    text-align: center;
+    padding: 1.25rem;
+    position: sticky;
+    top: 0;
+    background: white;
+    border-bottom: 1px solid #F3E7E0;
+    z-index: 2;
+  }
+
+  .dropdownContent {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .dropdownItem {
+    padding: 1.25rem 1.5rem;
+  }
+
+  .dropdownItemContent span:first-child {
+    font-size: 1rem;
+  }
+
+  .dropdownItemDescription {
+    font-size: 0.875rem;
+  }
+
+  .rotate {
+    transform: rotate(180deg);
+  }
+} 

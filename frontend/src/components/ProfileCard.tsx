@@ -14,6 +14,14 @@ export default function ProfileCard({ profile }: ProfileCardProps) {
       className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow cursor-pointer"
     >
       <h2 className="text-xl font-semibold text-brown-900 mb-4">{profile.name}</h2>
+      
+      {profile.intent && (
+        <div className="mb-4">
+          <h3 className="text-sm font-medium text-brown-700">Looking for</h3>
+          <p className="text-brown-600 italic">"{profile.intent}"</p>
+        </div>
+      )}
+
       <div className="space-y-2">
         <h3 className="text-sm font-medium text-brown-700">Interests</h3>
         <div className="flex flex-wrap gap-2">

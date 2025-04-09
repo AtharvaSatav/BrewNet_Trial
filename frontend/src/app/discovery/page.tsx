@@ -8,6 +8,8 @@ import { Profile } from "@/types/profile";
 import ClientNotifications from "@/components/ClientNotifications";
 import styles from "./page.module.css";
 import { API_BASE_URL } from '@/config/constants';
+import IntentPrompt from '@/components/IntentPrompt';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 export default function Discovery() {
   const router = useRouter();
@@ -18,6 +20,7 @@ export default function Discovery() {
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [unreadCounts, setUnreadCounts] = useState({ newRequests: 0, newConnections: 0 });
   const [unreadChats, setUnreadChats] = useState(0);
+  const [showIntentPrompt, setShowIntentPrompt] = useState(false);
 
   useEffect(() => {
     let pollingInterval: NodeJS.Timeout;
@@ -107,6 +110,51 @@ export default function Discovery() {
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    const checkAuthAndIntent = async () => {
+      try {
+        const user = auth.currentUser;
+        if (!user) {
+          router.push('/login');
+          return;
+        }
+
+        // Check if we came from login/landing page
+        const shouldShowIntent = localStorage.getItem('showIntent') === 'true';
+        if (shouldShowIntent) {
+          setShowIntentPrompt(true);
+          localStorage.removeItem('showIntent'); // Clear the flag
+        }
+
+        setLoading(false);
+      } catch (error) {
+        console.error('Error checking auth:', error);
+        setLoading(false);
+      }
+    };
+
+    checkAuthAndIntent();
+
+    // Add cleanup to handle page unmount
+    return () => {
+      if (window.location.pathname !== '/discovery') {
+        localStorage.removeItem('showIntent');
+      }
+    };
+  }, [router]);
+
+  // Add navigation handler for when leaving discovery
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      if (!showIntentPrompt) { // Only set if not showing prompt
+        localStorage.setItem('showIntent', 'true');
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [showIntentPrompt]);
+
   const handleSignOut = async () => {
     try {
       const userId = auth.currentUser?.uid;
@@ -144,18 +192,18 @@ export default function Discovery() {
   };
 
   if (loading) {
-    return (
-      <div className={styles.container}>
-        <div className={styles.overlay} />
-        <div className="flex items-center justify-center min-h-screen">
-          <div className="text-white">Loading profiles...</div>
-        </div>
-      </div>
-    );
+    return <LoadingSpinner />;
   }
 
   return (
     <div className={styles.container}>
+      {showIntentPrompt && (
+        <IntentPrompt 
+          onComplete={() => {
+            setShowIntentPrompt(false);
+          }} 
+        />
+      )}
       <div className={styles.overlay} />
       <header className={styles.header}>
         {/* For mobile, this will be top row */}
